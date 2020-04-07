@@ -6,6 +6,7 @@ import { ProcedureNodeWidget } from './ProcedureNodeWidget';
 
 
 export class ProcedureNodeFactory extends AbstractReactFactory<ProcedureNodeModel, DiagramEngine> {
+
     constructor() {
         super('ts-procedure-node');
     }

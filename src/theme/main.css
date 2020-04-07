@@ -37,6 +37,24 @@ body,
     border-radius: 10px;
 }
 
+.procedure-node-inputs:first-of-type {
+    margin-right: 10px;
+}
+
+.procedure-node-inputs {
+    -webkit-box-flex: 1;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.procedure-node-outputs {
+    -webkit-box-flex: 1;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 .circle-port {
     width: 12px;
     height: 12px;

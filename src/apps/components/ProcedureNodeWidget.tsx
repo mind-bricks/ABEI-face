@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {
     DiagramEngine,
-    PortWidget
+    PortWidget,
 } from '@projectstorm/react-diagrams-core';
 import { ProcedureNodeModel } from './ProcedureNodeModel';
 
@@ -20,14 +20,26 @@ export class ProcedureNodeWidget extends React.Component<ProcedureNodeWidgetProp
     }
 
     render() {
+        const inputPortList: JSX.Element[] = [];
+        const outputPortList: JSX.Element[] = [];
+        for (const i of Object.entries(this.props.node.getPorts())) {
+            const portModel = i[1];
+            const portList = portModel.getName().startsWith('in_') ? inputPortList : outputPortList;
+            portList.push(
+                <PortWidget engine={this.props.engine} port={portModel} key={portModel.getID()}>
+                    <div className="circle-port" />
+                </PortWidget>
+            );
+
+        }
         return (
             <div className="procedure-node">
-                <PortWidget engine={this.props.engine} port={this.props.node.getPort('in')}>
-                    <div className="circle-port" />
-                </PortWidget>
-                <PortWidget engine={this.props.engine} port={this.props.node.getPort('out')}>
-                    <div className="circle-port" />
-                </PortWidget>
+                <div className="procedure-node-inputs">
+                    {inputPortList}
+                </div>
+                <div className="procedure-node-outputs">
+                    {outputPortList}
+                </div>
                 <div className="procedure-node-color" style={{ backgroundColor: this.props.node.color }} />
             </div>
         );
