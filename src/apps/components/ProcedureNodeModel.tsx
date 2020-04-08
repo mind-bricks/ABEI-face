@@ -5,29 +5,32 @@ import {
 import { BaseModelOptions } from '@projectstorm/react-canvas-core';
 
 export interface ProcedureNodeModelOptions extends BaseModelOptions {
+    signature?: string;
     inputs?: string[];
     outputs?: string[];
     color?: string;
 }
 
 export class ProcedureNodeModel extends NodeModel {
-    inputs: string[];
-    outputs: string[];
+    signature: string;
     color: string;
 
     constructor(options: ProcedureNodeModelOptions = {}) {
         super({ ...options, type: 'ts-procedure-node' });
+        this.signature = options.signature || 'unknown';
         this.color = options.color || 'red';
-        this.inputs = options.inputs || [];
-        this.inputs.forEach((sig: string, index: number, _: string[]) => {
+
+        const inputs = options.inputs || [];
+        inputs.forEach((sig: string, index: number, _: string[]) => {
             this.addPort(new DefaultPortModel({
                 in: true,
                 label: sig,
                 name: `in_${index}`,
             }));
         });
-        this.outputs = options.outputs || [];
-        this.outputs.forEach((sig: string, index: number, _: string[]) => {
+
+        const outputs = options.outputs || [];
+        outputs.forEach((sig: string, index: number, _: string[]) => {
             this.addPort(new DefaultPortModel({
                 in: false,
                 label: sig,
