@@ -3,15 +3,11 @@
     padding: 0;
 }
 
-html {
-
-    body{
-
-        #application {
-            height: 100%;
-            overflow: hidden;
-        }
-    }
+html,
+body,
+#application {
+    height: 100%;
+    overflow: hidden;
 }
 
 .procedure-panel {
@@ -30,6 +26,9 @@ html {
     justify-content: space-between;
     position: relative;
     opacity: 0.7;
+    flex-grow: 1;
+    flex-direction: column;
+
 
     :hover {
         opacity: 1;

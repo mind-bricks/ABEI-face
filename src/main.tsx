@@ -7,8 +7,9 @@ import createEngine, {
 
 import { ProcedureNodeFactory } from './apps/components/ProcedureNodeFactory';
 import { ProcedurePanelWidget } from './apps/components/ProcedurePanelWidget';
-import './theme/main.css';
-// import './theme/main.less';
+
+// import './theme/main.css';
+import './theme/main.less';
 
 document.addEventListener('DOMContentLoaded', () => {
     // create an instance of the engine
