@@ -4,18 +4,18 @@ import {
 } from '@projectstorm/react-diagrams';
 import { BaseModelOptions } from '@projectstorm/react-canvas-core';
 
-export interface ProcedureNodeModelOptions extends BaseModelOptions {
+export interface IProcedureModelOptions extends BaseModelOptions {
     signature?: string;
     inputs?: string[];
     outputs?: string[];
     color?: string;
 }
 
-export class ProcedureNodeModel extends NodeModel {
+export class Procedure extends NodeModel {
     signature: string;
     color: string;
 
-    constructor(options: ProcedureNodeModelOptions = {}) {
+    constructor(options: IProcedureModelOptions = {}) {
         super({ ...options, type: 'ts-procedure-node' });
         this.signature = options.signature || 'unknown';
         this.color = options.color || 'red';
