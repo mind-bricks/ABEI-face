@@ -1,40 +1,17 @@
 import 'typeface-roboto';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import {
-    createMuiTheme,
-    colors,
-    CssBaseline,
-    ThemeProvider,
-} from '@material-ui/core';
+import { Provider } from 'react-redux';
 
 import './theme/main.less';
-import { AppIDE } from './apps/components/AppIDE'
-
+import { IDE } from './apps/components/IDE';
+import { store } from './apps/states';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Create a theme instance.
-    const theme = createMuiTheme({
-        palette: {
-            primary: {
-                main: '#556cd6',
-            },
-            secondary: {
-                main: '#19857b',
-            },
-            error: {
-                main: colors.red.A400,
-            },
-            background: {
-                default: '#fff',
-            },
-        },
-    });
-
     ReactDOM.render(
-        <ThemeProvider theme={theme}>
-            <AppIDE />
-        </ThemeProvider>,
+        <Provider store={store}>
+            <IDE />
+        </Provider>,
         document.querySelector('#application')
     );
 });

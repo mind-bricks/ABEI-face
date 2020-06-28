@@ -8,17 +8,14 @@ export interface IProcedureModelOptions extends BaseModelOptions {
     signature?: string;
     inputs?: string[];
     outputs?: string[];
-    color?: string;
 }
 
-export class Procedure extends NodeModel {
+export class ProcedureModel extends NodeModel {
     signature: string;
-    color: string;
 
     constructor(options: IProcedureModelOptions = {}) {
-        super({ ...options, type: 'ts-procedure-node' });
+        super({ ...options, type: 'procedure' });
         this.signature = options.signature || 'unknown';
-        this.color = options.color || 'red';
 
         const inputs = options.inputs || [];
         inputs.forEach((sig: string, index: number, _: string[]) => {
@@ -40,11 +37,11 @@ export class Procedure extends NodeModel {
     }
 
     serialize() {
-        return { ...super.serialize(), color: this.color };
+        return { ...super.serialize(), signature: this.signature };
     }
 
     deserialize(event: any): void {
         super.deserialize(event);
-        this.color = event.data.color;
+        this.signature = event.data.signature;
     }
 }
