@@ -6,33 +6,42 @@ import {
     makeStyles,
 
     Theme,
-    Typography,
     Box,
 } from '@material-ui/core';
-
-import { DiagramEngine } from '@projectstorm/react-diagrams';
+import {
+    DiagramEngine,
+    DiagramModel,
+} from '@projectstorm/react-diagrams';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
-
-import { ProcedureFactory } from './Procedure';
 import { IState } from '../states';
 
 
 interface IBoardProps {
-    engine: DiagramEngine;
     sidebarWidth: number;
     isSidebarShown: boolean;
     panelHeight: number;
     isPanelShown: boolean;
+
+    engine: DiagramEngine;
+    openedProcedures: string[];
+    selectedProcedureName: string | undefined;
+    selectedProcedureModel: DiagramModel | undefined;
 }
 
 export const Board = connect(
     (state: IState) => {
         return {
-            engine: state.diagram.engine,
             sidebarWidth: state.ide.sidebarWidth,
             isSidebarShown: state.ide.isSidebarShown,
             panelHeight: state.ide.panelHeight,
             isPanelShown: state.ide.isPanelShown,
+
+            engine: state.renderer.engine,
+            openedProcedures: [...state.renderer.models.keys()],
+            selectedProcedureName: state.renderer.modelNameSelected,
+            selectedProcedureModel: state.renderer.models.get(
+                state.renderer.modelNameSelected
+            ),
         };
     },
 )(function (props: IBoardProps) {
@@ -64,18 +73,30 @@ export const Board = connect(
                 marginLeft: props.sidebarWidth,
             },
             boardCavas: {
-                height: `calc(100vh - ${props.isPanelShown
-                    ? props.panelHeight
-                    : 0}px)`,
+                height: `calc(100vh - ${props.isPanelShown ? props.panelHeight : 0}px)`,
             }
         }),
     );
 
     const classes = useStyles();
 
-    // register procedure factory
-    props.engine.getNodeFactories().registerFactory(
-        new ProcedureFactory());
+    if (!props.selectedProcedureModel) {
+        if (props.selectedProcedureName) {
+            // TODO: 
+        }
+        return (
+            <Box
+                className={clsx(classes.board, {
+                    [classes.boardShift]: props.isSidebarShown,
+                })}
+            >
+                <div className={classes.boardHeader} />
+                AHAHAHAHAHA
+            </Box>
+        );
+    }
+
+    props.engine.setModel(props.selectedProcedureModel);
 
     return (
         <Box

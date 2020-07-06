@@ -14,10 +14,10 @@ export function IDE() {
     const theme = createMuiTheme({
         palette: {
             primary: {
-                main: '#556cd6',
+                main: '#75409A',
             },
             secondary: {
-                main: '#19857b',
+                main: '#11cb5f',
             },
             error: {
                 main: colors.red.A400,

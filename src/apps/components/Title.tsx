@@ -59,19 +59,20 @@ export const Title = connect(
     return (
         <AppBar
             position="fixed"
+            // className={classes.appBar}
             className={clsx(classes.appBar, {
                 [classes.appBarShift]: props.isSidebarShown
             })}
         >
             <Toolbar>
-                {!props.isSidebarShown && <IconButton
+                <IconButton
                     color="inherit"
                     aria-label="open drawer"
-                    onClick={() => props.showSidebar(true)}
+                    onClick={() => props.showSidebar(!props.isSidebarShown)}
                     edge="start"
                 >
                     <MenuIcon />
-                </IconButton>}
+                </IconButton>
                 <Typography variant="h6" noWrap>
                     {props.name}
                 </Typography>

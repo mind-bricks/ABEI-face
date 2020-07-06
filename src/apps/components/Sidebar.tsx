@@ -55,6 +55,7 @@ export const Sidebar = connect(
             },
             drawerPaper: {
                 width: props.width,
+                // zIndex: 0,
             },
             drawerHeader: {
                 display: 'flex',

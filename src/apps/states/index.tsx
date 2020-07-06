@@ -6,17 +6,17 @@ import {
 import {
     reduce as DiagramReduce,
     IState as IDiagramState,
-} from './Diagram';
+} from './Renderer';
 
 export interface IState {
     ide: IIDEState;
-    diagram: IDiagramState,
+    renderer: IDiagramState,
 }
 
 export const store = createStore(
     combineReducers({
         ide: IDEReduce,
-        diagram: DiagramReduce,
+        renderer: DiagramReduce,
     })
 );
 
@@ -28,7 +28,8 @@ export {
     IState as IIDEState,
 } from './IDE';
 export {
-    // resetEngine as DiagramResetEngine,
-    resetModel as DiagramResetModel,
-    IState as IDiagramState,
-} from './Diagram';
+    addModel as RendererAddModel,
+    deleteModel as RendererDeleteModel,
+    selectModel as RendererSelectModel,
+    IState as IRendererState,
+} from './Renderer';
