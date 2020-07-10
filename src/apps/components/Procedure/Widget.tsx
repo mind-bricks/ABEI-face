@@ -3,7 +3,95 @@ import {
     DiagramEngine,
     PortWidget,
 } from '@projectstorm/react-diagrams-core';
+import {
+    createStyles,
+    makeStyles,
+
+    Box,
+    Theme,
+    Typography,
+} from '@material-ui/core';
+import { LabelSharp } from '@material-ui/icons';
 import { ProcedureModel } from './Model';
+import { DefaultPortModel } from '@projectstorm/react-diagrams';
+
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        procedure: {
+            border: 'solid 3px',
+            borderColor: theme.palette.secondary.main,
+            borderRadius: '5px',
+            minWidth: '50px',
+            minHeight: '50px',
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            position: 'relative',
+            opacity: 0.8,
+            flexGrow: 1,
+            flexDirection: 'column',
+            '&:hover': {
+                opacity: 1.0,
+            }
+        },
+
+        procedureTitle: {
+            backgroundColor: theme.palette.primary.main,
+            width: '100%',
+        },
+
+        procedureTitleText: {
+            marginTop: '2px',
+            marginBottom: '2px',
+            marginLeft: '20px',
+            marginRight: '20px',
+            textAlign: 'center',
+        },
+
+        procedureBody: {
+            backgroundColor: theme.palette.primary.light,
+            width: '100%',
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            position: 'relative',
+        },
+
+        procedureHub: {
+            display: 'flex',
+            flexGrow: 1,
+            flexDirection: 'column',
+        },
+
+        procedurePort: {
+            display: 'flex',
+            // marginTop: '2px',
+            alignItems: 'center',
+        },
+
+        procedurePortText: {
+            flexGrow: 1,
+            padding: '0px 5px',
+            textAlign: 'center',
+        },
+
+        procedurePortLink: {
+            minWidth: '26px',
+            minHeight: '26px',
+            // marginTop: '3px',
+            // color: theme.palette.primary.light,
+            cursor: 'pointer',
+        },
+
+        procedurePortLinkIcon: {
+            color: theme.palette.primary.main,
+            '&:hover': {
+                color: theme.palette.secondary.main,
+            }
+        }
+
+    }),
+);
 
 interface IProcedureWidgetProps {
     model: ProcedureModel;
@@ -11,51 +99,50 @@ interface IProcedureWidgetProps {
 }
 
 export function ProcedureWidget(props: IProcedureWidgetProps) {
-    const inputPortList: JSX.Element[] = [];
-    const outputPortList: JSX.Element[] = [];
-    for (const i of Object.entries(props.model.getPorts())) {
-        const portModel = i[1];
-        const portID = portModel.getID();
-        const portName = portModel.getName();
-        const portIsInput = portName.startsWith('in_');
-        if (portIsInput) {
-            inputPortList.push(
-                <div className='port' key={portID}>
-                    <PortWidget
-                        engine={props.engine}
-                        port={portModel}
-                    >
-                        <div className='link'></div>
-                    </PortWidget>
-                    <div className='label'>{portName}</div>
-                </div>
-            )
-        } else {
-            outputPortList.push(
-                <div className='port' key={portID}>
-                    <div className='label'>{portName}</div>
-                    <PortWidget
-                        engine={props.engine}
-                        port={portModel}
-                    >
-                        <div className='link'></div>
-                    </PortWidget>
-                </div>
-            )
-        }
-    }
+
+    const classes = useStyles();
 
     return (
-        <div className='procedure-node'>
-            <div className='title'>{props.model.signature}</div>
-            <div className='body'>
-                <div className='hub'>
-                    {inputPortList}
+        <Box className={classes.procedure}>
+            <div className={classes.procedureTitle}>
+                <Typography className={classes.procedureTitleText}>
+                    {props.model.getSignature()}
+                </Typography>
+            </div>
+            <div className={classes.procedureBody}>
+                <div className={classes.procedureHub}>
+                    {props.model.getInPorts().map((port: DefaultPortModel) => (
+                        <div className={classes.procedurePort} key={port.getID()}>
+                            <PortWidget
+                                className={classes.procedurePortLink}
+                                engine={props.engine}
+                                port={port}
+                            >
+                                <LabelSharp className={classes.procedurePortLinkIcon} />
+                            </PortWidget>
+                            <Typography className={classes.procedurePortText}>
+                                {port.getOptions().label}
+                            </Typography>
+                        </div>
+                    ))}
                 </div>
-                <div className='hub' style={{ marginLeft: '20px' }}>
-                    {outputPortList}
+                <div className={classes.procedureHub}>
+                    {props.model.getOutPorts().map((port: DefaultPortModel) => (
+                        <div className={classes.procedurePort} key={port.getID()}>
+                            <Typography className={classes.procedurePortText}>
+                                {port.getOptions().label}
+                            </Typography>
+                            <PortWidget
+                                className={classes.procedurePortLink}
+                                engine={props.engine}
+                                port={port}
+                            >
+                                <LabelSharp className={classes.procedurePortLinkIcon} />
+                            </PortWidget>
+                        </div>
+                    ))}
                 </div>
             </div>
-        </ div>
+        </Box>
     );
 }

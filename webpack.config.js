@@ -119,13 +119,13 @@ module.exports = {
         }),
         new CopyWebpackPlugin([
             {
-                from: `node_modules/react/umd/react.development.js`,
-                // from: `node_modules/react/umd/react.production.min.js`,
+                // from: `node_modules/react/umd/react.development.js`,
+                from: `node_modules/react/umd/react.production.min.js`,
                 to: `js/react.min.js`,
             },
             {
-                from: `node_modules/react-dom/umd/react-dom.development.js`,
-                // from: `node_modules/react-dom/umd/react-dom.production.min.js`,
+                // from: `node_modules/react-dom/umd/react-dom.development.js`,
+                from: `node_modules/react-dom/umd/react-dom.production.min.js`,
                 to: `js/react-dom.min.js`,
             },
         ]),

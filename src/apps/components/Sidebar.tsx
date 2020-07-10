@@ -14,10 +14,12 @@ import {
     ListItemText,
     Theme,
 } from '@material-ui/core';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import {
+    ChevronLeft,
+    ChevronRight,
+    Inbox,
+    Mail,
+} from '@material-ui/icons';
 
 import {
     IDEResizeSidebar,
@@ -55,6 +57,7 @@ export const Sidebar = connect(
             },
             drawerPaper: {
                 width: props.width,
+                // backgroundColor: theme.palette.primary.light,
                 // zIndex: 0,
             },
             drawerHeader: {
@@ -65,6 +68,9 @@ export const Sidebar = connect(
                 ...theme.mixins.toolbar,
                 justifyContent: 'flex-end',
             },
+            drawerIcon: {
+                color: theme.palette.primary.main,
+            }
         }),
     );
 
@@ -81,14 +87,14 @@ export const Sidebar = connect(
         >
             <div className={classes.drawerHeader}>
                 <IconButton onClick={() => props.show(false)}>
-                    {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                    {theme.direction === 'ltr' ? <ChevronLeft className={classes.drawerIcon} /> : <ChevronRight className={classes.drawerIcon} />}
                 </IconButton>
             </div>
             <Divider />
             <List>
                 {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
                     <ListItem button key={text}>
-                        <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                        <ListItemIcon>{index % 2 === 0 ? <Inbox className={classes.drawerIcon} /> : <Mail className={classes.drawerIcon} />}</ListItemIcon>
                         <ListItemText primary={text} />
                     </ListItem>
                 ))}
@@ -97,7 +103,7 @@ export const Sidebar = connect(
             <List>
                 {['All mail', 'Trash', 'Spam'].map((text, index) => (
                     <ListItem button key={text}>
-                        <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                        <ListItemIcon>{index % 2 === 0 ? <Inbox className={classes.drawerIcon} /> : <Mail className={classes.drawerIcon} />}</ListItemIcon>
                         <ListItemText primary={text} />
                     </ListItem>
                 ))}

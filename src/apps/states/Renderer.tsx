@@ -50,7 +50,7 @@ function getInitialState(): IState {
     // };
 
     // mock ----------------------------------------
-    const model = new DiagramModel();
+    const model1 = new DiagramModel();
     // const factory = engine.getFactoryForNode('procedure');
     const node1 = factory.generateModel({
         initialConfig: {
@@ -70,13 +70,35 @@ function getInitialState(): IState {
     // const link1 = new DefaultLinkModel();
     // link1.setSourcePort(node1.getPort('out'));
     // link1.setTargetPort(node2.getPort('in'));
-    model.addAll(node1, node2);
+    model1.addAll(node1, node2);
+
+    const model2 = new DiagramModel();
+    // const factory = engine.getFactoryForNode('procedure');
+    const node3 = factory.generateModel({
+        initialConfig: {
+            signature: 'add@py:float@py',
+            inputs: [],
+            outputs: ['float@py'],
+        }
+    });
+
+    const node4 = factory.generateModel({
+        initialConfig: {
+            signature: 'mul@py:float@py',
+            inputs: ['float@py', 'float@py'],
+            outputs: ['float@py'],
+        }
+    });
+    // const link1 = new DefaultLinkModel();
+    // link1.setSourcePort(node1.getPort('out'));
+    // link1.setTargetPort(node2.getPort('in'));
+    model2.addAll(node3, node4);
     // ---------------------------------------------
 
     return {
         engine,
-        models: new Map([['test', model]]),
-        modelNameSelected: 'test',
+        models: new Map([['test1', model1], ['test2', model2]]),
+        modelNameSelected: 'test1',
     };
 
 }

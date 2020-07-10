@@ -24,7 +24,7 @@ export class ProcedureFactory extends AbstractReactFactory<
     generateReactWidget(event: GenerateWidgetEvent<ProcedureModel>): JSX.Element {
         return (
             <ProcedureWidget
-                engine={this.engine as DiagramEngine}
+                engine={this.engine}
                 model={event.model}
             />
         );

@@ -8,6 +8,8 @@ import {
     AppBar,
     IconButton,
     Theme,
+    Tab,
+    Tabs,
     Toolbar,
     Typography,
 } from '@material-ui/core';
@@ -15,15 +17,19 @@ import MenuIcon from '@material-ui/icons/Menu';
 
 import {
     IDEShowSidebar,
+    RendererSelectModel,
     IState,
 } from '../states';
 
 interface ITitleProps {
-    name: string;
     sidebarWidth: number;
     isSidebarShown: boolean;
 
+    openedProcedures: string[];
+    selectedProcedureName: string | undefined;
+
     showSidebar: Function;
+    selectProcedure: Function;
 }
 
 export const Title = connect(
@@ -31,9 +37,15 @@ export const Title = connect(
         return {
             sidebarWidth: state.ide.sidebarWidth,
             isSidebarShown: state.ide.isSidebarShown,
+
+            openedProcedures: [...state.renderer.models.keys()],
+            selectedProcedureName: state.renderer.modelNameSelected,
         };
     },
-    { showSidebar: IDEShowSidebar },
+    {
+        showSidebar: IDEShowSidebar,
+        selectProcedure: RendererSelectModel,
+    },
 )(function (props: ITitleProps) {
 
     const useStyles = makeStyles((theme: Theme) =>
@@ -54,28 +66,44 @@ export const Title = connect(
             },
         }),
     );
+
     const classes = useStyles();
 
     return (
         <AppBar
             position="fixed"
-            // className={classes.appBar}
             className={clsx(classes.appBar, {
                 [classes.appBarShift]: props.isSidebarShown
             })}
         >
             <Toolbar>
-                <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    onClick={() => props.showSidebar(!props.isSidebarShown)}
-                    edge="start"
+                {
+                    !props.isSidebarShown && <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={() => props.showSidebar(!props.isSidebarShown)}
+                        edge="start"
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                }
+                <Tabs
+                    value={props.openedProcedures.indexOf(props.selectedProcedureName)}
+                    onChange={
+                        (_ev: React.ChangeEvent<{}>, newValue: number) => {
+                            props.selectProcedure(props.openedProcedures[newValue]);
+                        }
+                    }
+                    indicatorColor="secondary"
+                    textColor="secondary"
+                    variant="scrollable"
+                    scrollButtons="auto"
+                // aria-label="scrollable auto tabs example"
                 >
-                    <MenuIcon />
-                </IconButton>
-                <Typography variant="h6" noWrap>
-                    {props.name}
-                </Typography>
+                    {props.openedProcedures.map((procedureSig: string) => (
+                        <Tab label={procedureSig} key={procedureSig} />)
+                    )}
+                </Tabs>
             </Toolbar>
         </AppBar>
     );

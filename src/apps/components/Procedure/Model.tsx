@@ -1,39 +1,102 @@
 import {
-    NodeModel,
+    // DefaultLinkModel,
+    DefaultNodeModel,
     DefaultPortModel,
+    // LinkModel,
+    PortModel,
+    PortModelAlignment,
 } from '@projectstorm/react-diagrams';
-import { BaseModelOptions } from '@projectstorm/react-canvas-core';
+import { Toolkit } from '@projectstorm/react-canvas-core';
+import { IProcedure } from '../../services';
 
-export interface IProcedureModelOptions extends BaseModelOptions {
-    signature?: string;
-    inputs?: string[];
-    outputs?: string[];
+
+
+export class ProcedureInputModel extends DefaultPortModel {
+    constructor(label: string) {
+        super({
+            in: true,
+            name: Toolkit.UID(),
+            label: label,
+            alignment: PortModelAlignment.LEFT,
+            maximumLinks: 1,
+        });
+    }
+
+    canLinkToPort(port: PortModel): boolean {
+        if (this.getNode() === port.getNode()) {
+            // can not link to self node
+            console.error('can not link to self');
+            return false;
+        }
+        return super.canLinkToPort(port);
+    }
+
+    // createLinkModel(): LinkModel | null {
+
+    //     return new DefaultLinkModel({
+    //         color: 
+    //     });
+    // }
 }
 
-export class ProcedureModel extends NodeModel {
-    signature: string;
-
-    constructor(options: IProcedureModelOptions = {}) {
-        super({ ...options, type: 'procedure' });
-        this.signature = options.signature || 'unknown';
-
-        const inputs = options.inputs || [];
-        inputs.forEach((sig: string, index: number, _: string[]) => {
-            this.addPort(new DefaultPortModel({
-                in: true,
-                label: sig,
-                name: `in_${index}`,
-            }));
+export class ProcedureOutputModel extends DefaultPortModel {
+    constructor(label: string) {
+        super({
+            in: false,
+            name: Toolkit.UID(),
+            label: label,
+            alignment: PortModelAlignment.RIGHT,
         });
+    }
 
-        const outputs = options.outputs || [];
-        outputs.forEach((sig: string, index: number, _: string[]) => {
-            this.addPort(new DefaultPortModel({
-                in: false,
-                label: sig,
-                name: `out_${index}`,
-            }));
-        });
+    canLinkToPort(port: PortModel): boolean {
+        if (this.getNode() === port.getNode()) {
+            // can not link to self node
+            console.error('can not link to self');
+            return false;
+        }
+        if (Object.entries(port.getLinks()).length >= port.getMaximumLinks()) {
+            return false;
+        }
+        return super.canLinkToPort(port);
+    }
+}
+
+export class ProcedureModel extends DefaultNodeModel {
+    protected signature: string;
+
+    constructor(options: IProcedure) {
+        super({ type: 'procedure' });
+
+        this.signature = options.signature;
+
+        for (const sig of options.inputs) {
+            this.addInPort(sig);
+        }
+
+        for (const sig of options.outputs) {
+            this.addOutPort(sig);
+        }
+    }
+
+    getSignature() {
+        return this.signature;
+    }
+
+    addInPort(label: string, after = true): DefaultPortModel {
+        const p = new ProcedureInputModel(label);
+        if (!after) {
+            this.portsIn.splice(0, 0, p);
+        }
+        return this.addPort(p);
+    }
+
+    addOutPort(label: string, after = true): DefaultPortModel {
+        const p = new ProcedureOutputModel(label);
+        if (!after) {
+            this.portsOut.splice(0, 0, p);
+        }
+        return this.addPort(p);
     }
 
     serialize() {
@@ -45,3 +108,5 @@ export class ProcedureModel extends NodeModel {
         this.signature = event.data.signature;
     }
 }
+
+

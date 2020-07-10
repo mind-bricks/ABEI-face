@@ -64,6 +64,7 @@ export const Board = connect(
                     duration: theme.transitions.duration.leavingScreen,
                 }),
                 marginLeft: 0,
+                width: '100vw',
             },
             boardShift: {
                 transition: theme.transitions.create('margin', {
@@ -72,9 +73,10 @@ export const Board = connect(
                 }),
                 marginLeft: props.sidebarWidth,
             },
-            boardCavas: {
+            boardCanvas: {
                 height: `calc(100vh - ${props.isPanelShown ? props.panelHeight : 0}px)`,
-            }
+                width: '100vw',
+            },
         }),
     );
 
@@ -104,9 +106,9 @@ export const Board = connect(
                 [classes.boardShift]: props.isSidebarShown,
             })}
         >
-            <div className={classes.boardHeader} />
+            <Box className={classes.boardHeader} />
             <CanvasWidget
-                className={classes.boardCavas}
+                className={classes.boardCanvas}
                 engine={props.engine}
             />
         </Box>
