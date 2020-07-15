@@ -22,8 +22,8 @@ import {
 } from '@material-ui/icons';
 
 import {
-    IDEResizeSidebar,
-    IDEShowSidebar,
+    LayoutResizeSidebar,
+    LayoutShowSidebar,
     IState,
 } from '../states';
 
@@ -39,13 +39,13 @@ interface ISidebarProps {
 export const Sidebar = connect(
     (state: IState) => {
         return {
-            isShown: state.ide.isSidebarShown,
-            width: state.ide.sidebarWidth,
+            isShown: state.layout.isSidebarShown,
+            width: state.layout.sidebarWidth,
         };
     },
     {
-        resize: IDEResizeSidebar,
-        show: IDEShowSidebar,
+        resize: LayoutResizeSidebar,
+        show: LayoutShowSidebar,
     },
 )(function (props: ISidebarProps) {
 

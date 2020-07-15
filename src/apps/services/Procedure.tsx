@@ -1,4 +1,4 @@
-// persistant data --------------------------------
+// persistent data --------------------------------
 export interface IProcedureJointInput {
     joint: IProcedureJoint | undefined;
     index: number;
@@ -16,7 +16,13 @@ export interface IProcedure {
     outputs: string[];
     joints: IProcedureJoint[];
     position?: IProcedurePosition;
+    // site?: IProcedureSite;
 }
+
+// export interface IProcedureSite {
+//     signature: string;
+//     basicSites: IProcedureSite[];
+// }
 
 // temporal data -----------------------------------
 export interface IProcedurePosition {

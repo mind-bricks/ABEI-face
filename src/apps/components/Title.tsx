@@ -16,7 +16,7 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 
 import {
-    IDEShowSidebar,
+    LayoutShowSidebar,
     RendererSelectModel,
     IState,
 } from '../states';
@@ -35,15 +35,15 @@ interface ITitleProps {
 export const Title = connect(
     (state: IState) => {
         return {
-            sidebarWidth: state.ide.sidebarWidth,
-            isSidebarShown: state.ide.isSidebarShown,
+            sidebarWidth: state.layout.sidebarWidth,
+            isSidebarShown: state.layout.isSidebarShown,
 
             openedProcedures: [...state.renderer.models.keys()],
             selectedProcedureName: state.renderer.modelNameSelected,
         };
     },
     {
-        showSidebar: IDEShowSidebar,
+        showSidebar: LayoutShowSidebar,
         selectProcedure: RendererSelectModel,
     },
 )(function (props: ITitleProps) {

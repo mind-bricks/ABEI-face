@@ -31,10 +31,10 @@ interface IBoardProps {
 export const Board = connect(
     (state: IState) => {
         return {
-            sidebarWidth: state.ide.sidebarWidth,
-            isSidebarShown: state.ide.isSidebarShown,
-            panelHeight: state.ide.panelHeight,
-            isPanelShown: state.ide.isPanelShown,
+            sidebarWidth: state.layout.sidebarWidth,
+            isSidebarShown: state.layout.isSidebarShown,
+            panelHeight: state.layout.panelHeight,
+            isPanelShown: state.layout.isPanelShown,
 
             engine: state.renderer.engine,
             openedProcedures: [...state.renderer.models.keys()],

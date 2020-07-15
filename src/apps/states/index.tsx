@@ -1,32 +1,32 @@
 import { combineReducers, createStore } from 'redux';
 import {
-    reduce as IDEReduce,
-    IState as IIDEState,
-} from './IDE';
+    reduce as LayoutReduce,
+    IState as ILayoutState,
+} from './Layout';
 import {
-    reduce as DiagramReduce,
-    IState as IDiagramState,
+    reduce as RendererReduce,
+    IState as IRendererState,
 } from './Renderer';
 
 export interface IState {
-    ide: IIDEState;
-    renderer: IDiagramState,
+    layout: ILayoutState;
+    renderer: IRendererState,
 }
 
 export const store = createStore(
     combineReducers({
-        ide: IDEReduce,
-        renderer: DiagramReduce,
+        layout: LayoutReduce,
+        renderer: RendererReduce,
     })
 );
 
 export {
-    showSidebar as IDEShowSidebar,
-    resizeSidebar as IDEResizeSidebar,
-    showPanel as IDEShowPanel,
-    resizePanel as IDEResizePanel,
-    IState as IIDEState,
-} from './IDE';
+    showSidebar as LayoutShowSidebar,
+    resizeSidebar as LayoutResizeSidebar,
+    showPanel as LayoutShowPanel,
+    resizePanel as LayoutResizePanel,
+    IState as ILayoutState,
+} from './Layout';
 export {
     addModel as RendererAddModel,
     deleteModel as RendererDeleteModel,
