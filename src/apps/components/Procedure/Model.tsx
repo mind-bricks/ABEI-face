@@ -7,7 +7,7 @@ import {
     PortModelAlignment,
 } from '@projectstorm/react-diagrams';
 import { Toolkit } from '@projectstorm/react-canvas-core';
-import { IProcedure } from '../../services';
+import { IProcedure } from '../../models';
 
 
 

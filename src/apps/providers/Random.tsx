@@ -1,4 +1,4 @@
-export class RandomGenerator {
+export class RandomProvider {
     readonly randomChars =
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
