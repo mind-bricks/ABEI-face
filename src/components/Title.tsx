@@ -4,14 +4,12 @@ import { connect } from 'react-redux';
 import {
     createStyles,
     makeStyles,
-
     AppBar,
     IconButton,
     Theme,
     Tab,
     Tabs,
     Toolbar,
-    Typography,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 
@@ -88,7 +86,7 @@ export const Title = connect(
                     </IconButton>
                 }
                 <Tabs
-                    value={props.openedProcedures.indexOf(props.selectedProcedureName)}
+                    value={props.openedProcedures.indexOf(props.selectedProcedureName as string)}
                     onChange={
                         (_ev: React.ChangeEvent<{}>, newValue: number) => {
                             props.selectProcedure(props.openedProcedures[newValue]);

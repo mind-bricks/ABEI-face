@@ -2,7 +2,7 @@ export {
     PaginatedList,
 } from './Pagination';
 
-export {
+export type {
     IProcedureJointInput,
     IProcedureJoint,
     IProcedure,

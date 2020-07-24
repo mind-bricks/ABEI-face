@@ -40,7 +40,7 @@ export const Board = connect(
             openedProcedures: [...state.renderer.models.keys()],
             selectedProcedureName: state.renderer.modelNameSelected,
             selectedProcedureModel: state.renderer.models.get(
-                state.renderer.modelNameSelected
+                state.renderer.modelNameSelected as string
             ),
         };
     },
@@ -84,7 +84,7 @@ export const Board = connect(
 
     if (!props.selectedProcedureModel) {
         if (props.selectedProcedureName) {
-            // TODO: 
+            // TODO:
         }
         return (
             <Box

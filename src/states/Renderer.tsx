@@ -40,7 +40,7 @@ type IAction =
 function getInitialState(): IState {
     const engine = createEngine();
     const factory = new ProcedureFactory();
-    // FIXME: using actions to register factory 
+    // FIXME: using actions to register factory
     engine.getNodeFactories().registerFactory(factory);
 
     // return {
@@ -172,7 +172,7 @@ export function reduce(
             const models2 = new Map(state.models);
             models2.delete(action.modelName);
 
-            if (state.modelNameSelected != action.modelName) {
+            if (state.modelNameSelected !== action.modelName) {
                 return { ...state, models: models2 };
             }
 
@@ -187,7 +187,7 @@ export function reduce(
                 return state;
             }
 
-            if (state.modelNameSelected == action.modelName) {
+            if (state.modelNameSelected === action.modelName) {
                 return state;
             }
 
