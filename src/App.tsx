@@ -11,6 +11,7 @@ import { Sidebar } from './components/Sidebar';
 import { Board } from './components/Board';
 
 function APP() {
+	console.log(process.env.REACT_APP_API_URL);
   const theme = createMuiTheme({
 		palette: {
 				primary: {
