@@ -2,6 +2,14 @@
   "name": "ABEI-face",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "env-cmd -e dev react-scripts start",
+    "start:test": "env-cmd -e test react-scripts start",
+    "start:prod": "env-cmd -e prod react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
     "@emotion/core": "^10.*",
     "@emotion/styled": "^10.*",
@@ -33,15 +41,10 @@
     "@types/react": "^16.9.8",
     "@types/react-dom": "^16.9.8",
     "@types/react-redux": "^7.1.9",
+    "env-cmd": "^10.1.0",
     "ml-matrix": "^6.5.0",
     "react-scripts": "3.4.1",
     "typescript": "^3.8.3"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
