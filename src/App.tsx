@@ -6,9 +6,9 @@ import {
 	CssBaseline,
 	ThemeProvider,
 } from '@material-ui/core';
-import { Title } from './components/Title';
-import { Sidebar } from './components/Sidebar';
-import { Board } from './components/Board';
+import { Title } from './containers/Title';
+import { Sidebar } from './containers/Sidebar';
+import { Board } from './containers/Board';
 
 export function App() {
 	console.log(process.env.REACT_APP_API_URL);

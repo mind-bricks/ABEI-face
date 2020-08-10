@@ -7,8 +7,6 @@ import {
     PortModelAlignment,
 } from '@projectstorm/react-diagrams';
 import { Toolkit } from '@projectstorm/react-canvas-core';
-import { IProcedure } from '../../models';
-
 
 
 export class ProcedureInputModel extends DefaultPortModel {
@@ -62,10 +60,18 @@ export class ProcedureOutputModel extends DefaultPortModel {
     }
 }
 
+
+export interface IProcedureModelOptions {
+    signature: string;
+    inputs: string[];
+    outputs: string[];
+}
+
+
 export class ProcedureModel extends DefaultNodeModel {
     protected signature: string;
 
-    constructor(options: IProcedure) {
+    constructor(options: IProcedureModelOptions) {
         super({ type: 'procedure' });
 
         this.signature = options.signature;

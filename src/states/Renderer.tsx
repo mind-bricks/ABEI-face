@@ -3,7 +3,7 @@ import createEngine, {
     DiagramEngine,
     DiagramModel,
 } from '@projectstorm/react-diagrams';
-import { ProcedureFactory } from '../components/Procedure';
+import { ProcedureFactory } from '../containers/Procedure';
 
 // import { AbstractFactory } from '@projectstorm/react-canvas-core';
 
