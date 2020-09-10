@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
 import {
 	createMuiTheme,
 	colors,
@@ -9,9 +10,36 @@ import {
 import { Title } from './containers/Title';
 import { Sidebar } from './containers/Sidebar';
 import { Board } from './containers/Board';
+import {
+	IProcedureService,
+	IProcedureSiteService,
+} from './services';
+import { EditorActions, IState } from './states';
 
-export function App() {
+
+interface IAppProps {
+	procedureService: IProcedureService;
+	procedureSiteService: IProcedureSiteService;
+	updateAllSites: Function;
+}
+
+export const App = connect(
+	(state: IState) => {
+		return {
+			procedureService: state.service.procedureService,
+			procedureSiteService: state.service.procedureSiteService,
+		};
+	},
+	{
+		updateAllSites: EditorActions.updateAllSites,
+	},
+)((props: IAppProps) => {
 	console.log(process.env.REACT_APP_API_URL);
+
+	useEffect(() => {
+		props.updateAllSites({ service: props.procedureSiteService });
+	});
+
 	const theme = createMuiTheme({
 		palette: {
 			primary: {
@@ -50,7 +78,8 @@ export function App() {
 			</Container>
 		</ThemeProvider>
 	);
-}
+})
+
 
 export default App;
 

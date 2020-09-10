@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import {
     createStyles,
@@ -22,8 +22,7 @@ import {
 } from '@material-ui/icons';
 
 import {
-    LayoutResizeSidebar,
-    LayoutShowSidebar,
+    LayoutActions,
     IState,
 } from '../states';
 
@@ -44,10 +43,10 @@ export const Sidebar = connect(
         };
     },
     {
-        resize: LayoutResizeSidebar,
-        show: LayoutShowSidebar,
+        resize: LayoutActions.resizeSidebar,
+        show: LayoutActions.showSidebar,
     },
-)(function (props: ISidebarProps) {
+)((props: ISidebarProps) => {
 
     const useStyles = makeStyles((theme: Theme) =>
         createStyles({

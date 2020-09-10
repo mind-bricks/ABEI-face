@@ -1,19 +1,18 @@
-import * as React from 'react';
+import React from 'react';
 import {
-    DiagramEngine,
     PortWidget,
+    DiagramEngine,
 } from '@projectstorm/react-diagrams-core';
 import {
     createStyles,
     makeStyles,
-
     Box,
     Theme,
     Typography,
 } from '@material-ui/core';
 import { LabelSharp } from '@material-ui/icons';
-import { ProcedureModel } from './Model';
-import { DefaultPortModel } from '@projectstorm/react-diagrams';
+import { IDiagramNode } from '..';
+
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -93,49 +92,48 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-interface IProcedureWidgetProps {
-    model: ProcedureModel;
+interface IDiagramWidgetProps {
     engine: DiagramEngine;
+    node: IDiagramNode;
 }
 
-export function ProcedureWidget(props: IProcedureWidgetProps) {
-
+export const DiagramWidget = (props: IDiagramWidgetProps) => {
     const classes = useStyles();
 
     return (
         <Box className={classes.procedure}>
             <div className={classes.procedureTitle}>
                 <Typography className={classes.procedureTitleText}>
-                    {props.model.getSignature()}
+                    {props.node.getSignature()}
                 </Typography>
             </div>
             <div className={classes.procedureBody}>
                 <div className={classes.procedureHub}>
-                    {props.model.getInPorts().map((port: DefaultPortModel) => (
-                        <div className={classes.procedurePort} key={port.getID()}>
+                    {props.node.getInputList().map((port) => (
+                        <div className={classes.procedurePort} key={port.getKey()}>
                             <PortWidget
                                 className={classes.procedurePortLink}
                                 engine={props.engine}
-                                port={port}
+                                port={port.getImplement()}
                             >
                                 <LabelSharp className={classes.procedurePortLinkIcon} />
                             </PortWidget>
                             <Typography className={classes.procedurePortText}>
-                                {port.getOptions().label}
+                                {port.getSignature()}
                             </Typography>
                         </div>
                     ))}
                 </div>
                 <div className={classes.procedureHub}>
-                    {props.model.getOutPorts().map((port: DefaultPortModel) => (
-                        <div className={classes.procedurePort} key={port.getID()}>
+                    {props.node.getOutputList().map((port) => (
+                        <div className={classes.procedurePort} key={port.getKey()}>
                             <Typography className={classes.procedurePortText}>
-                                {port.getOptions().label}
+                                {port.getSignature()}
                             </Typography>
                             <PortWidget
                                 className={classes.procedurePortLink}
                                 engine={props.engine}
-                                port={port}
+                                port={port.getImplement()}
                             >
                                 <LabelSharp className={classes.procedurePortLinkIcon} />
                             </PortWidget>

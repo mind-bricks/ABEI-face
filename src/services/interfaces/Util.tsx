@@ -1,4 +1,4 @@
-export interface IUtil {
+export interface IUtilService {
 
     generateRandomString(length?: number): string;
 }

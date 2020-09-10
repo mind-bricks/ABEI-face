@@ -1,6 +1,6 @@
-import { IUtil } from '../interfaces';
+import { IUtilService } from '..';
 
-export class Util implements IUtil {
+export class UtilService implements IUtilService {
     readonly randomChars =
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 

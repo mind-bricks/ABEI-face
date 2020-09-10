@@ -1,43 +1,32 @@
-import { combineReducers, createStore } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
 import {
-    reduce as LayoutReduce,
-		IState as ILayoutState,
-		showSidebar as LayoutShowSidebar,
-    resizeSidebar as LayoutResizeSidebar,
-    showPanel as LayoutShowPanel,
-    resizePanel as LayoutResizePanel,
+    actions as EditorActions,
+    reducer as EditorReducer,
+} from './Editor';
+import {
+    actions as LayoutActions,
+    reducer as LayoutReducer,
 } from './Layout';
 import {
-    reduce as RendererReduce,
-		IState as IRendererState,
-		addModel as RendererAddModel,
-    deleteModel as RendererDeleteModel,
-    selectModel as RendererSelectModel,
-} from './Renderer';
+    actions as ServiceActions,
+    reducer as ServiceReducer,
+} from './Service';
 
-export interface IState {
-    layout: ILayoutState;
-    renderer: IRendererState,
-}
-
-export const store = createStore(
-    combineReducers({
-        layout: LayoutReduce,
-        renderer: RendererReduce,
-    })
-);
+export const store = configureStore({
+    reducer: {
+        editor: EditorReducer,
+        layout: LayoutReducer,
+        service: ServiceReducer,
+    },
+    middleware: getDefaultMiddleware => getDefaultMiddleware({
+        immutableCheck: { ignoredPaths: ['service'] },
+        serializableCheck: { ignoredPaths: ['service'] },
+    }),
+});
+export type IState = ReturnType<typeof store.getState>;
 
 export {
-    LayoutShowSidebar,
-    LayoutResizeSidebar,
-    LayoutShowPanel,
-    LayoutResizePanel,
+    EditorActions,
+    LayoutActions,
+    ServiceActions,
 }
-export {
-    RendererAddModel,
-    RendererDeleteModel,
-    RendererSelectModel,
-}
-
-export type {ILayoutState};
-export type {IRendererState};

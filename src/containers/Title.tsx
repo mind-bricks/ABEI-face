@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
 import {
@@ -14,37 +14,46 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 
 import {
-    LayoutShowSidebar,
-    RendererSelectModel,
+    IDiagramSheetService,
+} from '../services';
+import {
+    EditorActions,
+    LayoutActions,
     IState,
 } from '../states';
 
 interface ITitleProps {
+    // service
+    diagramSheetService: IDiagramSheetService;
+
+    // layout
     sidebarWidth: number;
     isSidebarShown: boolean;
-
-    openedProcedures: string[];
-    selectedProcedureName: string | undefined;
-
     showSidebar: Function;
+
+    // editor
+    proceduresOpened: string[];
+    procedureSelected: string;
     selectProcedure: Function;
 }
 
 export const Title = connect(
     (state: IState) => {
         return {
+            diagramSheetService: state.service.diagramSheetService,
+
             sidebarWidth: state.layout.sidebarWidth,
             isSidebarShown: state.layout.isSidebarShown,
 
-            openedProcedures: [...state.renderer.models.keys()],
-            selectedProcedureName: state.renderer.modelNameSelected,
+            proceduresOpened: state.editor.proceduresOpened,
+            procedureSelected: state.editor.procedureSelected,
         };
     },
     {
-        showSidebar: LayoutShowSidebar,
-        selectProcedure: RendererSelectModel,
+        showSidebar: LayoutActions.showSidebar,
+        selectProcedure: EditorActions.selectProcedure,
     },
-)(function (props: ITitleProps) {
+)((props: ITitleProps) => {
 
     const useStyles = makeStyles((theme: Theme) =>
         createStyles({
@@ -86,10 +95,10 @@ export const Title = connect(
                     </IconButton>
                 }
                 <Tabs
-                    value={props.openedProcedures.indexOf(props.selectedProcedureName as string)}
+                    value={props.proceduresOpened.indexOf(props.procedureSelected)}
                     onChange={
                         (_ev: React.ChangeEvent<{}>, newValue: number) => {
-                            props.selectProcedure(props.openedProcedures[newValue]);
+                            props.selectProcedure(props.proceduresOpened[newValue]);
                         }
                     }
                     indicatorColor="secondary"
@@ -98,7 +107,7 @@ export const Title = connect(
                     scrollButtons="auto"
                 // aria-label="scrollable auto tabs example"
                 >
-                    {props.openedProcedures.map((procedureSig: string) => (
+                    {props.proceduresOpened.map((procedureSig: string) => (
                         <Tab label={procedureSig} key={procedureSig} />)
                     )}
                 </Tabs>

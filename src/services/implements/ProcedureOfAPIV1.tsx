@@ -5,7 +5,7 @@ import {
     IProcedureService,
     IProcedureSite,
     IProcedureSiteService,
-} from '../interfaces';
+} from '..';
 
 
 export class ProcedureService implements IProcedureService {

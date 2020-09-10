@@ -6,7 +6,7 @@ import {
     IProcedureSiteService,
     IPaginatedList,
     IPaginatingParams,
-} from '../../interfaces';
+} from '../..';
 
 
 class Procedure implements IProcedure {

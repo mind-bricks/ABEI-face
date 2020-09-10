@@ -1,50 +1,63 @@
-import * as React from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
 import {
     createStyles,
     makeStyles,
-
     Theme,
     Box,
 } from '@material-ui/core';
 import {
-    DiagramEngine,
-    DiagramModel,
-} from '@projectstorm/react-diagrams';
-import { CanvasWidget } from '@projectstorm/react-canvas-core';
-import { IState } from '../states';
+    CanvasWidget,
+} from '@projectstorm/react-canvas-core';
+import {
+    IDiagramSheetService,
+    IDiagramEngineService,
+} from '../services';
+import {
+    IState,
+    // ServiceActions,
+} from '../states';
 
 
 interface IBoardProps {
+    // services
+    diagramSheetService: IDiagramSheetService;
+    diagramEngineService: IDiagramEngineService;
+    // resetEngine: Function,
+
+    // layout
     sidebarWidth: number;
     isSidebarShown: boolean;
     panelHeight: number;
     isPanelShown: boolean;
 
-    engine: DiagramEngine;
-    openedProcedures: string[];
-    selectedProcedureName: string | undefined;
-    selectedProcedureModel: DiagramModel | undefined;
+    // editor
+    // procedures: Map<string, string[]>;
+    // proceduresOpened: string[];
+    procedureSelected: string;
 }
 
 export const Board = connect(
     (state: IState) => {
         return {
+            diagramSheetService: state.service.diagramSheetService,
+            diagramEngineService: state.service.diagramEngineService,
+
             sidebarWidth: state.layout.sidebarWidth,
             isSidebarShown: state.layout.isSidebarShown,
             panelHeight: state.layout.panelHeight,
             isPanelShown: state.layout.isPanelShown,
 
-            engine: state.renderer.engine,
-            openedProcedures: [...state.renderer.models.keys()],
-            selectedProcedureName: state.renderer.modelNameSelected,
-            selectedProcedureModel: state.renderer.models.get(
-                state.renderer.modelNameSelected as string
-            ),
+            // procedures: state.editor.procedures,
+            // proceduresOpened: state.editor.proceduresOpened,
+            procedureSelected: state.editor.procedureSelected,
         };
     },
-)(function (props: IBoardProps) {
+    // {
+    //     resetEngine: ServiceActions.resetEngine,
+    // }
+)((props: IBoardProps) => {
 
     const useStyles = makeStyles((theme: Theme) =>
         createStyles({
@@ -81,11 +94,9 @@ export const Board = connect(
     );
 
     const classes = useStyles();
+    const sheet = props.diagramSheetService.getSheet(props.procedureSelected);
 
-    if (!props.selectedProcedureModel) {
-        if (props.selectedProcedureName) {
-            // TODO:
-        }
+    if (!sheet) {
         return (
             <Box
                 className={clsx(classes.board, {
@@ -93,24 +104,25 @@ export const Board = connect(
                 })}
             >
                 <div className={classes.boardHeader} />
-                AHAHAHAHAHA
+                Ready to Load
+            </Box>
+        );
+    } else {
+        // set as current sheet
+        props.diagramEngineService.setSheet(sheet);
+
+        return (
+            <Box
+                className={clsx(classes.board, {
+                    [classes.boardShift]: props.isSidebarShown,
+                })}
+            >
+                <Box className={classes.boardHeader} />
+                <CanvasWidget
+                    className={classes.boardCanvas}
+                    engine={props.diagramEngineService.getEngine()}
+                />
             </Box>
         );
     }
-
-    props.engine.setModel(props.selectedProcedureModel);
-
-    return (
-        <Box
-            className={clsx(classes.board, {
-                [classes.boardShift]: props.isSidebarShown,
-            })}
-        >
-            <Box className={classes.boardHeader} />
-            <CanvasWidget
-                className={classes.boardCanvas}
-                engine={props.engine}
-            />
-        </Box>
-    );
 })
