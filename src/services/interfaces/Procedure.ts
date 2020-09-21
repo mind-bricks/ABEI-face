@@ -4,8 +4,13 @@ import {
 } from "./Pagination";
 
 
+export interface IProcedureID {
+    site: string;
+    signature: string;
+}
+
 export interface IProcedureJointInput {
-    readonly joint: IProcedureJoint | undefined;
+    readonly joint: string | undefined;
     readonly index: number;
 }
 
@@ -17,6 +22,7 @@ export interface IProcedureJoint {
 
 export interface IProcedure {
     readonly signature: string;
+    readonly isEditable: boolean;
     getDocument(): Promise<string>;
     getInputSignatureList(): Promise<Array<string>>;
     getOutputSignatureList(): Promise<Array<string>>;

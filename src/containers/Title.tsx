@@ -4,17 +4,26 @@ import { connect } from 'react-redux';
 import {
     createStyles,
     makeStyles,
+    // useTheme,
+
     AppBar,
+    // Button,
     IconButton,
+    Snackbar,
     Theme,
     Tab,
     Tabs,
     Toolbar,
 } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
+import {
+    Cancel,
+    Menu,
+} from '@material-ui/icons';
 
 import {
+    IProcedureID,
     IDiagramSheetService,
+    // IProcedureService,
 } from '../services';
 import {
     EditorActions,
@@ -25,6 +34,7 @@ import {
 interface ITitleProps {
     // service
     diagramSheetService: IDiagramSheetService;
+    // procedureSerivce: IProcedureService;
 
     // layout
     sidebarWidth: number;
@@ -32,26 +42,38 @@ interface ITitleProps {
     showSidebar: Function;
 
     // editor
-    proceduresOpened: string[];
-    procedureSelected: string;
+    proceduresOpened: IProcedureID[];
+    procedureSelected: IProcedureID | undefined;
     selectProcedure: Function;
+    closeProcedure: Function;
+
+    // notice
+    warning: string | undefined;
 }
 
 export const Title = connect(
     (state: IState) => {
         return {
             diagramSheetService: state.service.diagramSheetService,
+            // procedureSerivce: state.service.procedureService,
 
             sidebarWidth: state.layout.sidebarWidth,
             isSidebarShown: state.layout.isSidebarShown,
 
             proceduresOpened: state.editor.proceduresOpened,
             procedureSelected: state.editor.procedureSelected,
+
+            warning: (
+                state.notice.warning
+                    ? state.notice.warning.message
+                    : undefined
+            ),
         };
     },
     {
         showSidebar: LayoutActions.showSidebar,
         selectProcedure: EditorActions.selectProcedure,
+        closeProcedure: EditorActions.closeProcedure,
     },
 )((props: ITitleProps) => {
 
@@ -71,10 +93,19 @@ export const Title = connect(
                     duration: theme.transitions.duration.enteringScreen,
                 }),
             },
+            // tabWrapper: {
+            //     flexDirection: "row-reverse",
+            // },
+            closeIcon: {
+                color: `${theme.palette.warning.main}`,
+                // marginRight: theme.spacing(2),
+                marginLeft: "auto",
+            }
         }),
     );
 
     const classes = useStyles();
+    // const theme = useTheme();
 
     return (
         <AppBar
@@ -91,27 +122,54 @@ export const Title = connect(
                         onClick={() => props.showSidebar(!props.isSidebarShown)}
                         edge="start"
                     >
-                        <MenuIcon />
+                        <Menu color="secondary" />
                     </IconButton>
                 }
                 <Tabs
-                    value={props.proceduresOpened.indexOf(props.procedureSelected)}
-                    onChange={
-                        (_ev: React.ChangeEvent<{}>, newValue: number) => {
-                            props.selectProcedure(props.proceduresOpened[newValue]);
+                    value={props.proceduresOpened.findIndex((value) => (
+                        props.procedureSelected &&
+                        props.procedureSelected.site === value.site &&
+                        props.procedureSelected.signature === value.signature
+                    ))}
+                    onChange={(event, newValue) => {
+                        const id = props.proceduresOpened[newValue];
+                        if (id !== undefined) {
+                            props.selectProcedure(id);
                         }
-                    }
+                    }}
                     indicatorColor="secondary"
                     textColor="secondary"
                     variant="scrollable"
                     scrollButtons="auto"
                 // aria-label="scrollable auto tabs example"
                 >
-                    {props.proceduresOpened.map((procedureSig: string) => (
-                        <Tab label={procedureSig} key={procedureSig} />)
-                    )}
+                    {props.proceduresOpened.map((id) => (
+                        <Tab
+                            // classes={{ wrapper: classes.tabWrapper }}
+                            label={id.signature}
+                            key={id.signature}
+                        />
+                    ))}
                 </Tabs>
+                {/* <Button color="inherit">Login</Button> */}
+                <IconButton
+                    className={classes.closeIcon}
+                    color="inherit"
+                    // edge="end"
+                    onClick={(event) => {
+                        console.log(props.procedureSelected);
+                        props.closeProcedure(props.procedureSelected);
+                    }}
+                >
+                    <Cancel />
+                </IconButton>
             </Toolbar>
-        </AppBar>
+            <Snackbar
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                open={!!props.warning}
+                // onClose={handleClose}
+                message={props.warning}
+            />
+        </AppBar >
     );
 });

@@ -13,6 +13,7 @@ export type {
 } from './interfaces/Diagram';
 
 export type {
+    IProcedureID,
     IProcedureJointInput,
     IProcedureJoint,
     IProcedure,

@@ -4,6 +4,10 @@ import {
     reducer as EditorReducer,
 } from './Editor';
 import {
+    actions as NoticeActions,
+    reducer as NoticeReducer,
+} from './Notice';
+import {
     actions as LayoutActions,
     reducer as LayoutReducer,
 } from './Layout';
@@ -16,6 +20,7 @@ export const store = configureStore({
     reducer: {
         editor: EditorReducer,
         layout: LayoutReducer,
+        notice: NoticeReducer,
         service: ServiceReducer,
     },
     middleware: getDefaultMiddleware => getDefaultMiddleware({
@@ -28,5 +33,6 @@ export type IState = ReturnType<typeof store.getState>;
 export {
     EditorActions,
     LayoutActions,
+    NoticeActions,
     ServiceActions,
 }

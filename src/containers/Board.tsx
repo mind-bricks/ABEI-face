@@ -1,4 +1,7 @@
-import React from 'react';
+import React, {
+    useState,
+    useEffect,
+} from 'react';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
 import {
@@ -6,17 +9,23 @@ import {
     makeStyles,
     Theme,
     Box,
+    Typography,
 } from '@material-ui/core';
 import {
     CanvasWidget,
 } from '@projectstorm/react-canvas-core';
 import {
+    IDiagramSheet,
     IDiagramSheetService,
     IDiagramEngineService,
+    IProcedureID,
+    IProcedureSiteService,
+    IUtilService,
 } from '../services';
 import {
+    EditorActions,
+    NoticeActions,
     IState,
-    // ServiceActions,
 } from '../states';
 
 
@@ -24,6 +33,8 @@ interface IBoardProps {
     // services
     diagramSheetService: IDiagramSheetService;
     diagramEngineService: IDiagramEngineService;
+    procedureSiteService: IProcedureSiteService;
+    utilService: IUtilService;
     // resetEngine: Function,
 
     // layout
@@ -33,9 +44,12 @@ interface IBoardProps {
     isPanelShown: boolean;
 
     // editor
-    // procedures: Map<string, string[]>;
-    // proceduresOpened: string[];
-    procedureSelected: string;
+    procedureSelected: IProcedureID | undefined;
+    closeProcedure: Function;
+
+    // notice
+    showWarning: Function;
+    clearWarning: Function;
 }
 
 export const Board = connect(
@@ -43,6 +57,8 @@ export const Board = connect(
         return {
             diagramSheetService: state.service.diagramSheetService,
             diagramEngineService: state.service.diagramEngineService,
+            procedureSiteService: state.service.procedureSiteService,
+            utilService: state.service.utilService,
 
             sidebarWidth: state.layout.sidebarWidth,
             isSidebarShown: state.layout.isSidebarShown,
@@ -50,13 +66,14 @@ export const Board = connect(
             isPanelShown: state.layout.isPanelShown,
 
             // procedures: state.editor.procedures,
-            // proceduresOpened: state.editor.proceduresOpened,
             procedureSelected: state.editor.procedureSelected,
         };
     },
-    // {
-    //     resetEngine: ServiceActions.resetEngine,
-    // }
+    {
+        closeProcedure: EditorActions.closeProcedure,
+        showWarning: NoticeActions.showWarning,
+        clearWarning: NoticeActions.clearWarning,
+    }
 )((props: IBoardProps) => {
 
     const useStyles = makeStyles((theme: Theme) =>
@@ -94,35 +111,81 @@ export const Board = connect(
     );
 
     const classes = useStyles();
-    const sheet = props.diagramSheetService.getSheet(props.procedureSelected);
+    const [sheet, setSheet] = useState<IDiagramSheet | undefined>(undefined);
 
-    if (!sheet) {
-        return (
-            <Box
-                className={clsx(classes.board, {
-                    [classes.boardShift]: props.isSidebarShown,
-                })}
-            >
-                <div className={classes.boardHeader} />
-                Ready to Load
-            </Box>
-        );
-    } else {
-        // set as current sheet
-        props.diagramEngineService.setSheet(sheet);
+    useEffect(() => {
+        const updateSheet = async () => {
+            if (!props.procedureSelected) {
+                return;
+            }
 
-        return (
-            <Box
-                className={clsx(classes.board, {
-                    [classes.boardShift]: props.isSidebarShown,
-                })}
-            >
-                <Box className={classes.boardHeader} />
-                <CanvasWidget
-                    className={classes.boardCanvas}
-                    engine={props.diagramEngineService.getEngine()}
-                />
-            </Box>
-        );
-    }
+            const id = props.utilService.generateRandomString(8);
+            const site = await props.procedureSiteService.getSite(
+                props.procedureSelected.site);
+            if (!site) {
+                props.showWarning({ id, message: 'procedure is invalid' });
+                props.clearWarning({ id, timeout: 2 });
+
+                props.closeProcedure(props.procedureSelected);
+                return;
+            }
+
+            const procedure = await site.getProcedure(
+                props.procedureSelected.signature);
+            if (!procedure) {
+                props.showWarning({ id, message: 'procedure is invalid' });
+                props.clearWarning({ id, timeout: 2 });
+
+                props.closeProcedure(props.procedureSelected);
+                return;
+            }
+
+            if (!procedure.isEditable) {
+                props.showWarning({ id, message: 'procedure is not editable' });
+                props.clearWarning({ id, timeout: 2 });
+
+                props.closeProcedure(props.procedureSelected);
+                return;
+            }
+
+            let sheet = props.diagramSheetService.getSheet(
+                props.procedureSelected);
+
+            if (!sheet) {
+                sheet = await props.diagramSheetService.createSheet(procedure);
+            }
+
+
+            if (!sheet) {
+                props.showWarning({ id, message: 'procedure can not be loaded' });
+                props.clearWarning({ id, timeout: 2 });
+
+                props.closeProcedure(props.procedureSelected);
+                return;
+            }
+
+            props.diagramEngineService.setSheet(sheet);
+            setSheet(sheet);
+        }
+        updateSheet();
+    });
+
+    return (
+        <Box
+            className={clsx(classes.board, {
+                [classes.boardShift]: props.isSidebarShown,
+            })}
+        >
+            <Box className={classes.boardHeader} />
+            {
+                sheet && props.procedureSelected
+                    ? <CanvasWidget
+                        className={classes.boardCanvas}
+                        engine={props.diagramEngineService.getEngine()}
+                    />
+                    : <Typography>Loading</Typography>
+            }
+
+        </Box>
+    );
 })

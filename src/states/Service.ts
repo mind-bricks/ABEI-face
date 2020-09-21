@@ -18,7 +18,7 @@ import {
 import {
     ProcedureService,
     ProcedureSiteService,
-} from '../services/implements/mocks/Procedure';
+} from '../services/implements/ProcedureForMock';
 import {
     DiagramNodeService,
     DiagramSheetService,

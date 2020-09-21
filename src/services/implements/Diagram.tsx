@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    IProcedureID,
     IProcedure,
     IDiagramPort,
     IDiagramNode,
@@ -183,8 +184,19 @@ class DiagramSheet implements IDiagramSheet {
     constructor(protected sheetService: DiagramSheetService) { }
 
     async load(procedure: IProcedure): Promise<boolean> {
-        // TODO: load procedure
-        return false;
+        const joints = new Map<string, DiagramNode>();
+        for (const joint of await procedure.getJoints()) {
+            const node = new DiagramNode();
+            if (!await node.load(joint.procedure)) {
+                return false;
+            }
+            joints.set(joint.signature, node);
+        }
+
+        [...joints.values()].forEach((value, index) => {
+            this.model.addNode(value);
+        });
+        return true;
     }
 
     async createNode(procedure: IProcedure)
@@ -225,27 +237,36 @@ export class DiagramNodeService implements IDiagramNodeService {
 }
 
 export class DiagramSheetService implements IDiagramSheetService {
-    protected models: Map<string, IDiagramSheet>;
+    protected models: Map<string, Map<string, IDiagramSheet>>;
 
     constructor() {
-        this.models = new Map<string, IDiagramSheet>();
+        this.models = new Map<string, Map<string, IDiagramSheet>>();
     }
 
     async createSheet(procedure: IProcedure)
         : Promise<IDiagramSheet | undefined> {
-        if (this.models.has(procedure.signature))
+        const site = await procedure.getSite();
+        let models = this.models.get(site.signature);
+        if (models && models.has(procedure.signature)) {
             return undefined;
+        }
 
         const sheet = new DiagramSheet(this);
         if (!await sheet.load(procedure))
             return undefined;
 
-        this.models.set(procedure.signature, sheet);
+        if (!models) {
+            models = new Map<string, IDiagramSheet>();
+            this.models.set(site.signature, models);
+        }
+
+        models.set(procedure.signature, sheet);
         return sheet
     }
 
-    getSheet(signature: string): IDiagramSheet | undefined {
-        return this.models.get(signature);
+    getSheet(id: IProcedureID): IDiagramSheet | undefined {
+        const models = this.models.get(id.site);
+        return models ? models.get(id.signature) : undefined;
     }
 
     destroyAllSheets(): void {

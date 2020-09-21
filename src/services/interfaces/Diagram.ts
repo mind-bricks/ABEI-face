@@ -3,7 +3,10 @@ import {
     // DefaultNodeModel,
     DiagramEngine,
 } from '@projectstorm/react-diagrams';
-import { IProcedure } from './Procedure';
+import {
+    IProcedure,
+    IProcedureID,
+} from './Procedure';
 
 
 export interface IDiagramPort {
@@ -34,7 +37,7 @@ export interface IDiagramNodeService {
 
 export interface IDiagramSheetService {
     createSheet(procedure: IProcedure): Promise<IDiagramSheet | undefined>;
-    getSheet(name: string): IDiagramSheet | undefined;
+    getSheet(id: IProcedureID): IDiagramSheet | undefined;
     destroyAllSheets(): void;
 }
 
