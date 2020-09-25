@@ -11,16 +11,12 @@ import {
 import { Title } from './containers/Title';
 import { Sidebar } from './containers/Sidebar';
 import { Board } from './containers/Board';
-import {
-    IProcedureService,
-    IProcedureSiteService,
-} from './services';
+import { IProcedureSiteService } from './services';
 import { EditorActions, IState } from './states';
 
 
 interface IAppProps {
     // service
-    procedureService: IProcedureService;
     procedureSiteService: IProcedureSiteService;
 
     // editor
@@ -34,7 +30,6 @@ interface IAppProps {
 export const App = connect(
     (state: IState) => {
         return {
-            procedureService: state.service.procedureService,
             procedureSiteService: state.service.procedureSiteService,
             // warnings: state.notice.warnings,
             // warningTimout: state.notice.warningTimout,

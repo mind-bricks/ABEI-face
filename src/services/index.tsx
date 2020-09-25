@@ -17,7 +17,6 @@ export type {
     IProcedureJointInput,
     IProcedureJoint,
     IProcedure,
-    IProcedureService,
     IProcedureSite,
     IProcedureSiteService,
 } from './interfaces/Procedure';

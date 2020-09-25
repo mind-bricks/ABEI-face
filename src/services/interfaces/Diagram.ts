@@ -1,6 +1,6 @@
 import {
     DefaultPortModel,
-    // DefaultNodeModel,
+    DefaultNodeModel,
     DiagramEngine,
 } from '@projectstorm/react-diagrams';
 import {
@@ -22,6 +22,7 @@ export interface IDiagramNode {
     getDocument(): string;
     getInputList(): IDiagramPort[];
     getOutputList(): IDiagramPort[];
+    getImplement(): DefaultNodeModel;
 }
 
 export interface IDiagramSheet {

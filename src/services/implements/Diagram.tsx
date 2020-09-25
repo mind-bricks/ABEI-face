@@ -174,6 +174,10 @@ class DiagramNode extends DefaultNodeModel implements IDiagramNode {
     getOutputList(): IDiagramPort[] {
         return this.portsOut;
     }
+
+    getImplement(): DefaultNodeModel {
+        return this;
+    }
 }
 
 

@@ -1,31 +1,10 @@
 import {
     IPaginatedList,
     IPaginatingParams,
-    IProcedure,
-    IProcedureService,
+    // IProcedure,
     IProcedureSite,
     IProcedureSiteService,
 } from '..';
-
-
-export class ProcedureService implements IProcedureService {
-    async getProcedure(
-        signature: string,
-    ): Promise<IProcedure | undefined> {
-        return
-    }
-
-    async getProcedureList(
-        page?: IPaginatingParams
-    ): Promise<IPaginatedList<IProcedure>> {
-        return {
-            count: 0,
-            next: null,
-            previous: null,
-            results: [],
-        }
-    }
-}
 
 export class ProcedureSiteService implements IProcedureSiteService {
 

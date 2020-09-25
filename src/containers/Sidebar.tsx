@@ -179,6 +179,13 @@ export const Sidebar = connect(
                                     onClick={async (event) => {
                                         props.selectProcedure({ site: value[0], signature });
                                     }}
+                                    draggable={true}
+                                    onDragStart={(event) => {
+                                        event.dataTransfer.setData(
+                                            'dragProcedure',
+                                            JSON.stringify({ site: value[0], signature }),
+                                        );
+                                    }}
                                 >
                                     <ListItemIcon>
                                         <AccountTree color="primary" />

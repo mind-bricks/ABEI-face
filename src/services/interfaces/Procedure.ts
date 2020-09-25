@@ -31,23 +31,22 @@ export interface IProcedure {
     destroy(): Promise<boolean>;
 }
 
-export interface IProcedureService {
-    getProcedure(
-        signature: string,
-    ): Promise<IProcedure | undefined>;
-    getProcedureList(
-        page?: IPaginatingParams,
-    ): Promise<IPaginatedList<IProcedure>>;
-}
-
-export interface IProcedureSite extends IProcedureService {
+export interface IProcedureSite {
     readonly signature: string;
+    isDependingOn(
+        site: IProcedureSite): Promise<boolean>;
     getDependencyList(
         page?: IPaginatingParams,
     ): Promise<IPaginatedList<IProcedureSite>>;
     createProcedure(
         signature: string,
     ): Promise<IProcedure | undefined>;
+    getProcedure(
+        signature: string,
+    ): Promise<IProcedure | undefined>;
+    getProcedureList(
+        page?: IPaginatingParams,
+    ): Promise<IPaginatedList<IProcedure>>;
     destroy(): Promise<boolean>;
 }
 

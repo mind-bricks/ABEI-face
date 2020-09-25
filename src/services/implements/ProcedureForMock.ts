@@ -1,7 +1,6 @@
 import {
     IProcedureJoint,
     IProcedure,
-    IProcedureService,
     IProcedureSite,
     IProcedureSiteService,
     IPaginatedList,
@@ -117,33 +116,17 @@ class ProcedureSite implements IProcedureSite {
         }
     }
 
+    async isDependingOn(site: IProcedureSite) {
+        return !!(
+            this.dependencies &&
+            this.dependencies.findIndex((value) => (
+                value.signature === site.signature
+            )) !== -1
+        ) || site.signature === this.signature;
+    }
+
     async destroy(): Promise<boolean> {
         return true;
-    }
-}
-
-export class ProcedureService implements IProcedureService {
-
-    async getProcedure(
-        signature: string,
-    ): Promise<IProcedure | undefined> {
-        return new Procedure(signature, new ProcedureSite('mock site'));
-    }
-
-    async getProcedureList(
-        page?: IPaginatingParams,
-    ): Promise<IPaginatedList<IProcedure>> {
-        const site = new ProcedureSite('mock site');
-        return {
-            count: 3,
-            next: null,
-            previous: null,
-            results: [
-                new Procedure('mock 1', site),
-                new Procedure('mock 2', site),
-                new Procedure('mock 3', site),
-            ]
-        }
     }
 }
 
@@ -154,12 +137,15 @@ export class ProcedureSiteService implements IProcedureSiteService {
 
     constructor() {
         const numberOfSites = Math.floor(Math.random() * Math.floor(3)) + 3;
+        let previousSite: ProcedureSite | undefined = undefined;
         for (let i = 0; i < numberOfSites; ++i) {
             const signature = `mock site ${i.toString()}`;
-            this.entriesOfSites.set(
+            const site: ProcedureSite = new ProcedureSite(
                 signature,
-                new ProcedureSite(signature),
+                previousSite ? [previousSite] : [],
             );
+            this.entriesOfSites.set(signature, site);
+            previousSite = site;
         }
     }
 

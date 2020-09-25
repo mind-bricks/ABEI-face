@@ -19,6 +19,7 @@ import {
     IDiagramSheetService,
     IDiagramEngineService,
     IProcedureID,
+    IProcedure,
     IProcedureSiteService,
     IUtilService,
 } from '../services';
@@ -51,6 +52,7 @@ interface IBoardProps {
     showWarning: Function;
     clearWarning: Function;
 }
+
 
 export const Board = connect(
     (state: IState) => {
@@ -111,18 +113,29 @@ export const Board = connect(
     );
 
     const classes = useStyles();
-    const [sheet, setSheet] = useState<IDiagramSheet | undefined>(undefined);
+
+    const [, forceUpdate] = useState<object>({});
+    const [
+        currentSheet,
+        setCurrentSheet
+    ] = useState<IDiagramSheet | undefined>(undefined);
+    const [
+        currentProcedure,
+        setCurrentProcedure,
+    ] = useState<IProcedure | undefined>(undefined);
 
     useEffect(() => {
-        const updateSheet = async () => {
+        (async () => {
             if (!props.procedureSelected) {
+                setCurrentSheet(undefined);
+                setCurrentProcedure(undefined);
                 return;
             }
 
-            const id = props.utilService.generateRandomString(8);
             const site = await props.procedureSiteService.getSite(
                 props.procedureSelected.site);
             if (!site) {
+                const id = props.utilService.generateRandomString(8);
                 props.showWarning({ id, message: 'procedure is invalid' });
                 props.clearWarning({ id, timeout: 2 });
 
@@ -133,6 +146,7 @@ export const Board = connect(
             const procedure = await site.getProcedure(
                 props.procedureSelected.signature);
             if (!procedure) {
+                const id = props.utilService.generateRandomString(8);
                 props.showWarning({ id, message: 'procedure is invalid' });
                 props.clearWarning({ id, timeout: 2 });
 
@@ -141,6 +155,7 @@ export const Board = connect(
             }
 
             if (!procedure.isEditable) {
+                const id = props.utilService.generateRandomString(8);
                 props.showWarning({ id, message: 'procedure is not editable' });
                 props.clearWarning({ id, timeout: 2 });
 
@@ -155,8 +170,8 @@ export const Board = connect(
                 sheet = await props.diagramSheetService.createSheet(procedure);
             }
 
-
             if (!sheet) {
+                const id = props.utilService.generateRandomString(8);
                 props.showWarning({ id, message: 'procedure can not be loaded' });
                 props.clearWarning({ id, timeout: 2 });
 
@@ -165,9 +180,10 @@ export const Board = connect(
             }
 
             props.diagramEngineService.setSheet(sheet);
-            setSheet(sheet);
-        }
-        updateSheet();
+
+            setCurrentSheet(sheet);
+            setCurrentProcedure(procedure);
+        })();
     });
 
     return (
@@ -178,11 +194,71 @@ export const Board = connect(
         >
             <Box className={classes.boardHeader} />
             {
-                sheet && props.procedureSelected
-                    ? <CanvasWidget
-                        className={classes.boardCanvas}
-                        engine={props.diagramEngineService.getEngine()}
-                    />
+                currentSheet && currentProcedure
+                    ? <Box
+                        onDrop={async (event) => {
+                            event.persist();
+
+                            const data = JSON.parse(event.dataTransfer.getData('dragProcedure'));
+                            const currentSite = await currentProcedure.getSite();
+                            if (
+                                currentSite.signature === data.site &&
+                                currentProcedure.signature === data.signature
+                            ) {
+                                const id = props.utilService.generateRandomString(8);
+                                props.showWarning({ id, message: 'recursive calling is not allowed' });
+                                props.clearWarning({ id, timeout: 2 });
+                                return;
+                            }
+
+                            const site = await props.procedureSiteService.getSite(data.site);
+                            if (!site) {
+                                const id = props.utilService.generateRandomString(8);
+                                props.showWarning({ id, message: 'procedure site not found' });
+                                props.clearWarning({ id, timeout: 2 });
+                                return;
+                            }
+
+                            if (!await currentSite.isDependingOn(site)) {
+                                const id = props.utilService.generateRandomString(8);
+                                props.showWarning({
+                                    id,
+                                    message: 'current procedure does not depend on droped in procedure'
+                                });
+                                props.clearWarning({ id, timeout: 2 });
+                                return;
+                            }
+
+                            const procedure = await site.getProcedure(data.signature);
+                            if (!procedure) {
+                                const id = props.utilService.generateRandomString(8);
+                                props.showWarning({ id, message: 'invalid droped in procedure' });
+                                props.clearWarning({ id, timeout: 2 });
+                                return;
+                            }
+
+                            const node = await currentSheet.createNode(procedure);
+                            if (!node) {
+                                const id = props.utilService.generateRandomString(8);
+                                props.showWarning({ id, message: 'procedure load error' });
+                                props.clearWarning({ id, timeout: 2 });
+                                return;
+                            }
+                            // adjust node position
+                            node.getImplement().setPosition(
+                                props.diagramEngineService.getEngine().getRelativeMousePoint(event));
+
+                            forceUpdate({});
+                        }}
+                        onDragOver={(event) => {
+                            event.preventDefault();
+                        }}
+                    >
+                        <CanvasWidget
+                            className={classes.boardCanvas}
+                            engine={props.diagramEngineService.getEngine()}
+                        />
+                    </Box>
                     : <Typography>Loading</Typography>
             }
 

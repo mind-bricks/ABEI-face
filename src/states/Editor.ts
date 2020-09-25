@@ -6,7 +6,6 @@ import {
 import {
     IProcedureID,
     IProcedureSite,
-    // IProcedureService,
     IProcedureSiteService,
 } from '../services';
 

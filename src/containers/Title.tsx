@@ -23,7 +23,6 @@ import {
 import {
     IProcedureID,
     IDiagramSheetService,
-    // IProcedureService,
 } from '../services';
 import {
     EditorActions,
@@ -34,7 +33,6 @@ import {
 interface ITitleProps {
     // service
     diagramSheetService: IDiagramSheetService;
-    // procedureSerivce: IProcedureService;
 
     // layout
     sidebarWidth: number;

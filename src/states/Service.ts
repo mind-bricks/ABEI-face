@@ -6,7 +6,6 @@ import {
     DiagramEngine,
 } from '@projectstorm/react-diagrams';
 import {
-    IProcedureService,
     IProcedureSiteService,
     IDiagramNodeService,
     IDiagramSheetService,
@@ -16,7 +15,6 @@ import {
 
 // service implementation -----------------------------------------------------
 import {
-    ProcedureService,
     ProcedureSiteService,
 } from '../services/implements/ProcedureForMock';
 import {
@@ -32,7 +30,6 @@ import {
 const slice = createSlice({
     name: 'service',
     initialState: {
-        procedureService: new ProcedureService() as IProcedureService,
         procedureSiteService: new ProcedureSiteService() as IProcedureSiteService,
         diagramNodeService: new DiagramNodeService() as IDiagramNodeService,
         diagramSheetService: new DiagramSheetService() as IDiagramSheetService,
