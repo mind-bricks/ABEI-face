@@ -16,6 +16,9 @@ import {
     Toolbar,
 } from '@material-ui/core';
 import {
+    Alert,
+} from '@material-ui/lab';
+import {
     Cancel,
     Menu,
 } from '@material-ui/icons';
@@ -27,6 +30,7 @@ import {
 import {
     EditorActions,
     LayoutActions,
+    NoticeActions,
     IState,
 } from '../states';
 
@@ -47,6 +51,8 @@ interface ITitleProps {
 
     // notice
     warning: string | undefined;
+    warningTimeout: number;
+    clearWarning: Function;
 }
 
 export const Title = connect(
@@ -61,17 +67,15 @@ export const Title = connect(
             proceduresOpened: state.editor.proceduresOpened,
             procedureSelected: state.editor.procedureSelected,
 
-            warning: (
-                state.notice.warning
-                    ? state.notice.warning.message
-                    : undefined
-            ),
+            warning: state.notice.warning,
+            warningTimeout: state.notice.warningTimeout,
         };
     },
     {
         showSidebar: LayoutActions.showSidebar,
         selectProcedure: EditorActions.selectProcedure,
         closeProcedure: EditorActions.closeProcedure,
+        clearWarning: NoticeActions.clearWarning,
     },
 )((props: ITitleProps) => {
 
@@ -164,10 +168,17 @@ export const Title = connect(
             </Toolbar>
             <Snackbar
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                autoHideDuration={props.warningTimeout * 1000}
                 open={!!props.warning}
-                // onClose={handleClose}
-                message={props.warning}
-            />
+                onClose={() => { props.clearWarning(); }}
+            >
+                <Alert
+                    severity="warning"
+                    onClose={() => { props.clearWarning(); }}
+                >
+                    {props.warning}
+                </Alert>
+            </Snackbar>
         </AppBar >
     );
 });

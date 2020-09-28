@@ -21,7 +21,6 @@ import {
     IProcedureID,
     IProcedure,
     IProcedureSiteService,
-    IUtilService,
 } from '../services';
 import {
     EditorActions,
@@ -35,7 +34,6 @@ interface IBoardProps {
     diagramSheetService: IDiagramSheetService;
     diagramEngineService: IDiagramEngineService;
     procedureSiteService: IProcedureSiteService;
-    utilService: IUtilService;
     // resetEngine: Function,
 
     // layout
@@ -50,7 +48,6 @@ interface IBoardProps {
 
     // notice
     showWarning: Function;
-    clearWarning: Function;
 }
 
 
@@ -60,7 +57,6 @@ export const Board = connect(
             diagramSheetService: state.service.diagramSheetService,
             diagramEngineService: state.service.diagramEngineService,
             procedureSiteService: state.service.procedureSiteService,
-            utilService: state.service.utilService,
 
             sidebarWidth: state.layout.sidebarWidth,
             isSidebarShown: state.layout.isSidebarShown,
@@ -74,7 +70,6 @@ export const Board = connect(
     {
         closeProcedure: EditorActions.closeProcedure,
         showWarning: NoticeActions.showWarning,
-        clearWarning: NoticeActions.clearWarning,
     }
 )((props: IBoardProps) => {
 
@@ -135,10 +130,7 @@ export const Board = connect(
             const site = await props.procedureSiteService.getSite(
                 props.procedureSelected.site);
             if (!site) {
-                const id = props.utilService.generateRandomString(8);
-                props.showWarning({ id, message: 'procedure is invalid' });
-                props.clearWarning({ id, timeout: 2 });
-
+                props.showWarning('procedure is invalid');
                 props.closeProcedure(props.procedureSelected);
                 return;
             }
@@ -146,19 +138,13 @@ export const Board = connect(
             const procedure = await site.getProcedure(
                 props.procedureSelected.signature);
             if (!procedure) {
-                const id = props.utilService.generateRandomString(8);
-                props.showWarning({ id, message: 'procedure is invalid' });
-                props.clearWarning({ id, timeout: 2 });
-
+                props.showWarning('procedure is invalid');
                 props.closeProcedure(props.procedureSelected);
                 return;
             }
 
             if (!procedure.isEditable) {
-                const id = props.utilService.generateRandomString(8);
-                props.showWarning({ id, message: 'procedure is not editable' });
-                props.clearWarning({ id, timeout: 2 });
-
+                props.showWarning('procedure is not editable');
                 props.closeProcedure(props.procedureSelected);
                 return;
             }
@@ -171,10 +157,7 @@ export const Board = connect(
             }
 
             if (!sheet) {
-                const id = props.utilService.generateRandomString(8);
-                props.showWarning({ id, message: 'procedure can not be loaded' });
-                props.clearWarning({ id, timeout: 2 });
-
+                props.showWarning('procedure can not be loaded');
                 props.closeProcedure(props.procedureSelected);
                 return;
             }
@@ -205,43 +188,30 @@ export const Board = connect(
                                 currentSite.signature === data.site &&
                                 currentProcedure.signature === data.signature
                             ) {
-                                const id = props.utilService.generateRandomString(8);
-                                props.showWarning({ id, message: 'recursive calling is not allowed' });
-                                props.clearWarning({ id, timeout: 2 });
+                                props.showWarning('recursive calling is not allowed');
                                 return;
                             }
 
                             const site = await props.procedureSiteService.getSite(data.site);
                             if (!site) {
-                                const id = props.utilService.generateRandomString(8);
-                                props.showWarning({ id, message: 'procedure site not found' });
-                                props.clearWarning({ id, timeout: 2 });
+                                props.showWarning('procedure site not found');
                                 return;
                             }
 
                             if (!await currentSite.isDependingOn(site)) {
-                                const id = props.utilService.generateRandomString(8);
-                                props.showWarning({
-                                    id,
-                                    message: 'current procedure does not depend on droped in procedure'
-                                });
-                                props.clearWarning({ id, timeout: 2 });
+                                props.showWarning('current procedure does not depend on droped in procedure');
                                 return;
                             }
 
                             const procedure = await site.getProcedure(data.signature);
                             if (!procedure) {
-                                const id = props.utilService.generateRandomString(8);
-                                props.showWarning({ id, message: 'invalid droped in procedure' });
-                                props.clearWarning({ id, timeout: 2 });
+                                props.showWarning('invalid droped in procedure');
                                 return;
                             }
 
                             const node = await currentSheet.createNode(procedure);
                             if (!node) {
-                                const id = props.utilService.generateRandomString(8);
-                                props.showWarning({ id, message: 'procedure load error' });
-                                props.clearWarning({ id, timeout: 2 });
+                                props.showWarning('procedure load error');
                                 return;
                             }
                             // adjust node position
