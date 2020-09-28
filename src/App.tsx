@@ -11,6 +11,7 @@ import {
 import { Title } from './containers/Title';
 import { Sidebar } from './containers/Sidebar';
 import { Board } from './containers/Board';
+import { Panel } from './containers/Panel';
 import { IProcedureSiteService } from './services';
 import { EditorActions, IState } from './states';
 
@@ -80,6 +81,7 @@ export const App = connect(
                 <Sidebar />
                 <Title />
                 <Board />
+                <Panel />
             </Container>
         </ThemeProvider>
     );

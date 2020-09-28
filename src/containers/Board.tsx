@@ -91,7 +91,7 @@ export const Board = connect(
                     duration: theme.transitions.duration.leavingScreen,
                 }),
                 marginLeft: 0,
-                width: '100vw',
+                // width: '100vw',
             },
             boardShift: {
                 transition: theme.transitions.create('margin', {
@@ -102,7 +102,7 @@ export const Board = connect(
             },
             boardCanvas: {
                 height: `calc(100vh - ${props.isPanelShown ? props.panelHeight : 0}px)`,
-                width: '100vw',
+                // width: '100vw',
             },
         }),
     );
