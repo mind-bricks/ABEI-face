@@ -15,12 +15,11 @@ import {
     CanvasWidget,
 } from '@projectstorm/react-canvas-core';
 import {
-    IDiagramSheet,
     IDiagramSheetService,
     IDiagramEngineService,
     IProcedureID,
-    IProcedure,
     IProcedureSiteService,
+    IUtilService,
 } from '../services';
 import {
     EditorActions,
@@ -34,6 +33,7 @@ interface IBoardProps {
     diagramSheetService: IDiagramSheetService;
     diagramEngineService: IDiagramEngineService;
     procedureSiteService: IProcedureSiteService;
+    utilSerivice: IUtilService;
     // resetEngine: Function,
 
     // layout
@@ -57,6 +57,7 @@ export const Board = connect(
             diagramSheetService: state.service.diagramSheetService,
             diagramEngineService: state.service.diagramEngineService,
             procedureSiteService: state.service.procedureSiteService,
+            utilSerivice: state.service.utilService,
 
             sidebarWidth: state.layout.sidebarWidth,
             isSidebarShown: state.layout.isSidebarShown,
@@ -111,19 +112,14 @@ export const Board = connect(
 
     const [, forceUpdate] = useState<object>({});
     const [
-        currentSheet,
-        setCurrentSheet
-    ] = useState<IDiagramSheet | undefined>(undefined);
-    const [
-        currentProcedure,
-        setCurrentProcedure,
-    ] = useState<IProcedure | undefined>(undefined);
+        selectedProcedure,
+        setSelectedProcedure,
+    ] = useState<IProcedureID | undefined>(undefined);
 
     useEffect(() => {
         (async () => {
             if (!props.procedureSelected) {
-                setCurrentSheet(undefined);
-                setCurrentProcedure(undefined);
+                setSelectedProcedure(undefined);
                 return;
             }
 
@@ -143,7 +139,7 @@ export const Board = connect(
                 return;
             }
 
-            if (!procedure.isEditable) {
+            if (!await procedure.getEditable()) {
                 props.showWarning('procedure is not editable');
                 props.closeProcedure(props.procedureSelected);
                 return;
@@ -152,8 +148,10 @@ export const Board = connect(
             let sheet = props.diagramSheetService.getSheet(
                 props.procedureSelected);
 
+            let sheetCreated = false;
             if (!sheet) {
                 sheet = await props.diagramSheetService.createSheet(procedure);
+                sheetCreated = Boolean(sheet);
             }
 
             if (!sheet) {
@@ -162,10 +160,26 @@ export const Board = connect(
                 return;
             }
 
-            props.diagramEngineService.setSheet(sheet);
+            if (
+                site.signature !== selectedProcedure?.site ||
+                procedure.signature !== selectedProcedure?.signature
+            ) {
+                props.diagramEngineService.setSheet(sheet);
+                setSelectedProcedure(props.procedureSelected);
 
-            setCurrentSheet(sheet);
-            setCurrentProcedure(procedure);
+                if (sheetCreated) {
+                    // format sheet when it is loaded for the first time
+
+                    await new Promise<void>((resolve) => {
+                        // wait for 200 milliseconds
+                        setTimeout(() => resolve(), 200);
+                    });
+                    props.diagramEngineService.formatSheet(sheet);
+                    const engine = props.diagramEngineService.getEngine();
+                    engine.repaintCanvas();
+                }
+            }
+
         })();
     });
 
@@ -177,13 +191,28 @@ export const Board = connect(
         >
             <Box className={classes.boardHeader} />
             {
-                currentSheet && currentProcedure
+                selectedProcedure
                     ? <Box
-                        onDrop={async (event) => {
+                        onDrop={async (event: React.DragEvent<HTMLElement>) => {
                             event.persist();
 
                             const data = JSON.parse(event.dataTransfer.getData('dragProcedure'));
-                            const currentSite = await currentProcedure.getSite();
+                            const currentSite = await props.procedureSiteService.getSite(
+                                selectedProcedure.site);
+
+                            if (!currentSite) {
+                                props.showWarning(`procedure site ${selectedProcedure.site} not found`);
+                                return;
+                            }
+
+                            const currentProcedure = await currentSite.getProcedure(
+                                selectedProcedure.signature);
+
+                            if (!currentProcedure) {
+                                props.showWarning(`procedure ${selectedProcedure.signature} not found`);
+                                return;
+                            }
+
                             if (
                                 currentSite.signature === data.site &&
                                 currentProcedure.signature === data.signature
@@ -209,18 +238,37 @@ export const Board = connect(
                                 return;
                             }
 
-                            const node = await currentSheet.createNode(procedure);
+                            const sheet = props.diagramSheetService.getSheet(
+                                selectedProcedure);
+                            if (!sheet) {
+                                props.showWarning('current sheet not found');
+                                props.closeProcedure(props.procedureSelected);
+                                return;
+                            }
+
+                            const joint = await currentProcedure.createJoint(
+                                props.utilSerivice.generateRandomString(6),
+                                procedure,
+                            )
+                            if (!joint) {
+                                props.showWarning('failed to create joint');
+                                return;
+                            }
+
+                            const node = await sheet.createNode(joint);
                             if (!node) {
                                 props.showWarning('procedure load error');
                                 return;
                             }
+
                             // adjust node position
+                            const engine = props.diagramEngineService.getEngine();
                             node.getImplement().setPosition(
-                                props.diagramEngineService.getEngine().getRelativeMousePoint(event));
+                                engine.getRelativeMousePoint(event));
 
                             forceUpdate({});
                         }}
-                        onDragOver={(event) => {
+                        onDragOver={(event: React.DragEvent<HTMLElement>) => {
                             event.preventDefault();
                         }}
                     >

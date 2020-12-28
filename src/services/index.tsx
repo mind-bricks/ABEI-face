@@ -14,7 +14,7 @@ export type {
 
 export type {
     IProcedureID,
-    IProcedureJointInput,
+    IProcedureJointLink,
     IProcedureJoint,
     IProcedure,
     IProcedureSite,

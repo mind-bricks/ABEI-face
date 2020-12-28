@@ -1,5 +1,6 @@
 import {
     IProcedureJoint,
+    IProcedureJointLink,
     IProcedure,
     IProcedureSite,
     IProcedureSiteService,
@@ -8,8 +9,50 @@ import {
 } from '..';
 
 
+class ProcedureJoint implements IProcedureJoint {
+
+    constructor(
+        readonly signature: string,
+        protected readonly caller: IProcedure,
+        protected readonly callee: IProcedure,
+    ) {
+
+    }
+
+    getCaller(): IProcedure {
+        return this.caller;
+    }
+
+    getCallee(): IProcedure {
+        return this.callee;
+    }
+
+    async setLink(
+        index: number,
+        link: IProcedureJointLink | undefined,
+    ): Promise<boolean> {
+        return false;
+    }
+
+    async getLink(
+        index: number,
+    ): Promise<IProcedureJointLink | undefined> {
+        return undefined;
+    }
+
+    async getLinkList(): Promise<Map<number, IProcedureJointLink>> {
+        return new Map(); // return empty map
+    }
+
+    async destroy(): Promise<boolean> {
+        return false;
+    }
+
+}
+
+
 class Procedure implements IProcedure {
-    isEditable: boolean;
+    editable: boolean;
     document: string;
     joints: IProcedureJoint[];
 
@@ -18,39 +61,80 @@ class Procedure implements IProcedure {
         protected site: IProcedureSite,
     ) {
         this.document = Math.random().toString(36).substring(7);
-        this.isEditable = Boolean(Math.random() >= 0.5);
+        this.editable = Boolean(Math.random() >= 0.5);
         this.joints = [];
 
-        if (this.isEditable) {
+        if (this.editable) {
             const count = Math.floor(Math.random() * 4);
             for (let i = 0; i < count; ++i) {
-                this.joints.push({
-                    signature: i.toString(),
-                    procedure: new Procedure(signature + ' sub', site),
-                    getInputs: async function () { return []; },
-                })
+                this.joints.push(new ProcedureJoint(
+                    i.toString(),
+                    this,
+                    new Procedure(signature + ' sub', site),
+                ))
             }
         }
+    }
+
+    async getEditable(): Promise<boolean> {
+        return this.editable;
+    }
+
+    async getSite(): Promise<IProcedureSite> {
+        return this.site;
+    }
+
+    async setDocument(document: string): Promise<boolean> {
+        this.document = document;
+        return true;
     }
 
     async getDocument(): Promise<string> {
         return this.document;
     }
 
-    async getInputSignatureList(): Promise<Array<string>> {
-        return ['float@py', 'float@py'];
+    async getInputSignatureList(): Promise<Map<number, string>> {
+        return new Map([[0, 'float'], [1, 'float']]);
     }
 
-    async getOutputSignatureList(): Promise<Array<string>> {
-        return ['float@py'];
+    async setInputSignature(
+        index: number,
+        signature: string,
+    ): Promise<boolean> {
+        return false;
     }
 
-    async getJoints(): Promise<Array<IProcedureJoint>> {
+    async getOutputSignatureList(): Promise<Map<number, string>> {
+        return new Map([[0, 'float']]);
+    }
+
+    async setOutputSignature(
+        index: number,
+        signature: string,
+    ): Promise<boolean> {
+        return false;
+    }
+
+    async createJoint(
+        signature: string,
+        procedure: IProcedure,
+    ): Promise<IProcedureJoint | undefined> {
+        return undefined;
+    }
+
+    async getJointList(): Promise<Array<IProcedureJoint>> {
         return this.joints;
     }
 
-    async getSite(): Promise<IProcedureSite> {
-        return this.site;
+    async getJoint(
+        signature: string,
+    ): Promise<IProcedureJoint | undefined> {
+        for (const joint of this.joints) {
+            if (joint.signature === signature) {
+                return joint;
+            }
+        }
+        return undefined;
     }
 
     async destroy(): Promise<boolean> {

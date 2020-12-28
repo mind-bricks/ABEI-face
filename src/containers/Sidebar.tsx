@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import {
     createStyles,
@@ -10,6 +10,10 @@ import {
     AccordionSummary,
     AccordionDetails,
     Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Divider,
     Drawer,
     IconButton,
@@ -17,6 +21,7 @@ import {
     ListItem,
     ListItemIcon,
     ListItemText,
+    TextField,
     Theme,
     Typography,
 } from '@material-ui/core';
@@ -29,6 +34,7 @@ import {
 
 import {
     IProcedureID,
+    IProcedureSite,
     IProcedureSiteService,
 } from '../services';
 import {
@@ -125,6 +131,14 @@ export const Sidebar = connect(
 
     const classes = useStyles();
     const theme = useTheme();
+    const [
+        procedureName,
+        setProcedureName,
+    ] = useState<string>('');
+    const [
+        procedureSite,
+        setProcedureSite,
+    ] = useState<IProcedureSite | undefined>(undefined);
 
     return (
         <Drawer
@@ -143,12 +157,57 @@ export const Sidebar = connect(
                     }
                 </IconButton>
             </div>
+
+            <Dialog
+                open={procedureSite !== undefined}
+                aria-labelledby="form-dialog-title"
+                onClose={() => setProcedureSite(undefined)}
+            >
+                <DialogTitle id="form-dialog-title">
+                    Create Procedure in Site {procedureSite?.signature}
+                </DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="New Procedure Name"
+                        type="text"
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => setProcedureName(event.target.value)}
+                        value={procedureName}
+                        fullWidth
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button color="primary" onClick={() => setProcedureSite(undefined)}>
+                        Cancel
+                    </Button>
+                    <Button color="primary" onClick={async () => {
+                        if (procedureSite && procedureName) {
+                            const procedure = await procedureSite.createProcedure(procedureName);
+                            if (procedure) {
+                                props.listProcedures({
+                                    service: procedureSite
+                                });
+                                props.selectProcedure({
+                                    site: procedureSite.signature,
+                                    signature: procedureName,
+                                });
+                            }
+                        }
+                        setProcedureSite(undefined);
+                    }} >
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
             {[...Object.entries(props.procedures)].map((value, index, _) => (
                 <Accordion
                     className={classes.accordion}
                     classes={{ expanded: classes.accordionExpanded }}
                     key={value[0]}
-                    onChange={async (event, isExpanded) => {
+                    onChange={async (event: object, isExpanded: boolean) => {
                         if (isExpanded && !value[1].length) {
                             const site = await props.procedureSiteService.getSite(value[0]);
                             if (site) {
@@ -176,11 +235,11 @@ export const Sidebar = connect(
                                         props.procedureSelected.signature === signature
                                     }
                                     key={signature}
-                                    onClick={async (event) => {
+                                    onClick={async (event: React.MouseEvent<HTMLElement>) => {
                                         props.selectProcedure({ site: value[0], signature });
                                     }}
                                     draggable={true}
-                                    onDragStart={(event) => {
+                                    onDragStart={(event: React.DragEvent<HTMLElement>) => {
                                         event.dataTransfer.setData(
                                             'dragProcedure',
                                             JSON.stringify({ site: value[0], signature }),
@@ -203,11 +262,12 @@ export const Sidebar = connect(
                             onClick={async () => {
                                 const site = await props.procedureSiteService.getSite(value[0]);
                                 if (site) {
-                                    props.listProcedures({ service: site });
+                                    setProcedureSite(site);
+                                    setProcedureName('');
                                 }
                             }}
                         >
-                            Refresh
+                            Create Site Procedure
                         </Button>
                         <Button
                             size="small"
@@ -219,7 +279,7 @@ export const Sidebar = connect(
                                 }
                             }}
                         >
-                            Delete
+                            Delete Site
                         </Button>
                     </AccordionActions>
                 </Accordion>

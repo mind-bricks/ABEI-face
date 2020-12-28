@@ -158,7 +158,7 @@ export const Title = connect(
                     className={classes.closeIcon}
                     color="inherit"
                     // edge="end"
-                    onClick={(event) => {
+                    onClick={(event: React.MouseEvent<HTMLElement>) => {
                         console.log(props.procedureSelected);
                         props.closeProcedure(props.procedureSelected);
                     }}

@@ -97,7 +97,7 @@ interface IDiagramWidgetProps {
     node: IDiagramNode;
 }
 
-export const DiagramWidget = (props: IDiagramWidgetProps) => {
+export const DiagramNodeWidget = (props: IDiagramWidgetProps) => {
     const classes = useStyles();
 
     return (
@@ -109,7 +109,7 @@ export const DiagramWidget = (props: IDiagramWidgetProps) => {
             </div>
             <div className={classes.procedureBody}>
                 <div className={classes.procedureHub}>
-                    {props.node.getInputList().map((port) => (
+                    {[...props.node.getInputList().values()].map((port) => (
                         <div className={classes.procedurePort} key={port.getKey()}>
                             <PortWidget
                                 className={classes.procedurePortLink}
@@ -125,7 +125,7 @@ export const DiagramWidget = (props: IDiagramWidgetProps) => {
                     ))}
                 </div>
                 <div className={classes.procedureHub}>
-                    {props.node.getOutputList().map((port) => (
+                    {[...props.node.getOutputList().values()].map((port) => (
                         <div className={classes.procedurePort} key={port.getKey()}>
                             <Typography className={classes.procedurePortText}>
                                 {port.getSignature()}

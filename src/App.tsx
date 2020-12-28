@@ -40,7 +40,7 @@ export const App = connect(
         listSites: EditorActions.listSites,
     },
 )((props: IAppProps) => {
-    console.log(process.env.REACT_APP_API_URL);
+    console.log(process.env);
 
     useEffect(() => {
         props.listSites({ service: props.procedureSiteService });

@@ -1,11 +1,13 @@
 import {
     DefaultPortModel,
     DefaultNodeModel,
+    DagreEngine,
     DiagramEngine,
 } from '@projectstorm/react-diagrams';
 import {
-    IProcedure,
     IProcedureID,
+    IProcedure,
+    IProcedureJoint,
 } from './Procedure';
 
 
@@ -16,24 +18,22 @@ export interface IDiagramPort {
 }
 
 export interface IDiagramNode {
-    load(procedure: IProcedure): Promise<boolean>;
     destroy(): boolean;
     getSignature(): string;
     getDocument(): string;
-    getInputList(): IDiagramPort[];
-    getOutputList(): IDiagramPort[];
+    getInputList(): Map<number, IDiagramPort>;
+    getOutputList(): Map<number, IDiagramPort>;
     getImplement(): DefaultNodeModel;
 }
 
 export interface IDiagramSheet {
-    load(procedure: IProcedure): Promise<boolean>;
-    createNode(procedure: IProcedure): Promise<IDiagramNode | undefined>;
+    createNode(joint: IProcedureJoint): Promise<IDiagramNode | undefined>;
     addNode(node: IDiagramNode): boolean;
     destroy(): boolean;
 }
 
 export interface IDiagramNodeService {
-    createNode(procedure: IProcedure): Promise<IDiagramNode | undefined>;
+    createNode(joint: IProcedureJoint): Promise<IDiagramNode | undefined>;
 }
 
 export interface IDiagramSheetService {
@@ -44,5 +44,7 @@ export interface IDiagramSheetService {
 
 export interface IDiagramEngineService {
     getEngine(): DiagramEngine;
+    getFormatter(): DagreEngine;
     setSheet(sheet: IDiagramSheet): boolean;
+    formatSheet(sheet: IDiagramSheet): boolean;
 }
